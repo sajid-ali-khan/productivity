@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -151,25 +152,32 @@ class HabitsFragment : Fragment(), TextToSpeech.OnInitListener {
     }
 
     private fun practiceSpeakingDialog(word: VocabWordEntity) {
-        MaterialAlertDialogBuilder(requireContext())
+        val dialog = MaterialAlertDialogBuilder(requireContext())
             .setTitle("Practice Speaking: ${word.word}")
             .setMessage(
                 "Phonetic: ${word.phonetic}\n\n" +
                         "💡 Tip: ${word.speakingTip}\n\n" +
                         "Try reading this aloud:\n\"${word.example}\""
             )
-            .setPositiveButton("Listen to Sentence") { _, _ ->
-                if (isTtsReady && textToSpeech != null) {
-                    textToSpeech?.speak(word.example, TextToSpeech.QUEUE_FLUSH, null, "sentence_utterance")
-                } else if (textToSpeech != null) {
-                    textToSpeech?.speak(word.example, TextToSpeech.QUEUE_FLUSH, null, "sentence_utterance")
-                }
-            }
-            .setNeutralButton("Listen to Word") { _, _ ->
-                speakWord(word)
-            }
+            .setPositiveButton("Listen to Sentence", null)
+            .setNeutralButton("Listen to Word", null)
             .setNegativeButton(R.string.close, null)
-            .show()
+            .create()
+
+        dialog.show()
+
+        // Override click listeners so the dialog stays open while practicing
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setOnClickListener {
+            if (isTtsReady && textToSpeech != null) {
+                textToSpeech?.speak(word.example, TextToSpeech.QUEUE_FLUSH, null, "sentence_utterance")
+            } else if (textToSpeech != null) {
+                textToSpeech?.speak(word.example, TextToSpeech.QUEUE_FLUSH, null, "sentence_utterance")
+            }
+        }
+
+        dialog.getButton(AlertDialog.BUTTON_NEUTRAL)?.setOnClickListener {
+            speakWord(word)
+        }
     }
 
     private fun observeData() {

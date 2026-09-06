@@ -128,29 +128,35 @@ class ProductivityRepository(
 
     // Day-by-day logs history
     val habitHistoryByDate: Flow<List<DayHabitHistory>> = combine(
-        habitDao.getAllHabits(),
+        habitDao.getActiveHabits(),
         habitDao.getAllLogs()
-    ) { habits, logs ->
-        val habitNameMap = habits.associate { it.id to it.name }
-        val logsByDate = logs.groupBy { it.date }.toSortedMap(compareByDescending { it })
+    ) { activeHabits, logs ->
+        if (activeHabits.isEmpty()) {
+            return@combine emptyList<DayHabitHistory>()
+        }
 
-        logsByDate.map { (date, dateLogs) ->
+        val todayStr = DateUtils.getTodayDateString()
+        val allDates = (logs.map { it.date } + todayStr).distinct().sortedDescending()
+        val logsByDate = logs.groupBy { it.date }
+
+        allDates.map { date ->
+            val dateLogsMap = (logsByDate[date] ?: emptyList()).associateBy { it.habitId }
             val followed = mutableListOf<String>()
             val skipped = mutableListOf<String>()
 
-            dateLogs.forEach { log ->
-                val name = habitNameMap[log.habitId] ?: "Habit #${log.habitId}"
-                if (log.isCompleted) {
-                    followed.add(name)
+            activeHabits.forEach { habit ->
+                val log = dateLogsMap[habit.id]
+                if (log?.isCompleted == true) {
+                    followed.add(habit.name)
                 } else {
-                    skipped.add(name)
+                    skipped.add(habit.name)
                 }
             }
 
             DayHabitHistory(
                 date = date,
                 displayDate = DateUtils.formatDisplayDate(date),
-                totalHabits = dateLogs.size,
+                totalHabits = activeHabits.size,
                 completedCount = followed.size,
                 followedHabits = followed,
                 skippedHabits = skipped
