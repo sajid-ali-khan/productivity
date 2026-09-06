@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="6dp"
+    app:cardBackgroundColor="@color/app_surface"
+    app:cardCornerRadius="18dp"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/app_stroke"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/text_history_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/app_text_primary"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                tools:text="Yesterday • Sat, Sep 5" />
+
+            <TextView
+                android:id="@+id/text_history_rate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/app_text_secondary"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                tools:text="3 of 4 completed" />
+        </LinearLayout>
+
+        <!-- Followed habits list -->
+        <TextView
+            android:id="@+id/text_history_followed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:lineSpacingExtra="3dp"
+            android:textColor="@color/app_text_primary"
+            android:textSize="13sp"
+            tools:text="✓ Read 20 pages\n✓ Deep focus study\n✓ Plan priorities" />
+
+        <!-- Skipped habits list -->
+        <TextView
+            android:id="@+id/text_history_skipped"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:lineSpacingExtra="3dp"
+            android:textColor="@color/app_text_muted"
+            android:textSize="13sp"
+            tools:text="✕ Physical exercise" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

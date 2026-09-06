@@ -1,0 +1,8 @@
+{
+  "name": "Productivity",
+  "description": "Productivity app with habit tracking, study timer, daily English vocabulary \u0026 speaking practice, customizable typography, and theme preferences.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

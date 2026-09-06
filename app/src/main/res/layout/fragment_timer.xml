@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_bg"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:paddingBottom="48dp">
+
+        <!-- 1. Whole Study Time Summary Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="@color/app_surface"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/app_stroke"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:letterSpacing="0.08"
+                    android:text="@string/study_whole_time_header"
+                    android:textColor="@color/app_text_muted"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:textAllCaps="true" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:gravity="bottom"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/text_today_total_time"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/app_text_primary"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        tools:text="1h 45m" />
+
+                    <TextView
+                        android:id="@+id/text_all_time_total"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/app_text_secondary"
+                        android:textSize="13sp"
+                        tools:text="All-Time: 12h 30m" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/text_today_sessions_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:textColor="@color/app_text_secondary"
+                    android:textSize="13sp"
+                    tools:text="2 sessions recorded today" />
+
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/progress_today_study"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:indicatorColor="@color/app_text_primary"
+                    app:trackColor="@color/app_stroke"
+                    app:trackCornerRadius="4dp"
+                    app:trackThickness="8dp"
+                    tools:progress="60" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/study_goal_label"
+                        android:textColor="@color/app_text_muted"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/text_study_goal_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/app_text_secondary"
+                        android:textSize="12sp"
+                        tools:text="88% achieved" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 2. Active Session Timer Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            app:cardBackgroundColor="@color/app_surface"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/app_stroke"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="28dp">
+
+                <!-- Status pill -->
+                <TextView
+                    android:id="@+id/text_timer_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_stat_card"
+                    android:letterSpacing="0.08"
+                    android:paddingHorizontal="14dp"
+                    android:paddingVertical="6dp"
+                    android:text="@string/study_status_ready"
+                    android:textColor="@color/app_text_secondary"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:textAllCaps="true" />
+
+                <!-- Active session indicator -->
+                <TextView
+                    android:id="@+id/text_active_session_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_stat_card"
+                    android:letterSpacing="0.05"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="4dp"
+                    android:text="Resuming Saved Session"
+                    android:textColor="@color/app_text_primary"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+                <!-- Digital Time Display -->
+                <TextView
+                    android:id="@+id/text_timer_clock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:fontFamily="monospace"
+                    android:text="00:00:00"
+                    android:textColor="@color/app_text_primary"
+                    android:textSize="48sp"
+                    android:textStyle="bold" />
+
+                <!-- Subject input field (no overlapping hint/title) -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/input_layout_subject"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/study_subject_label"
+                    app:boxCornerRadiusBottomEnd="14dp"
+                    app:boxCornerRadiusBottomStart="14dp"
+                    app:boxCornerRadiusTopEnd="14dp"
+                    app:boxCornerRadiusTopStart="14dp"
+                    app:boxStrokeColor="@color/app_stroke"
+                    app:hintTextColor="@color/app_text_secondary"
+                    app:placeholderText="@string/study_subject_hint">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/input_study_subject"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapSentences"
+                        android:maxLines="1"
+                        android:text="@string/quick_chip_general"
+                        android:textColor="@color/app_text_primary"
+                        android:textSize="14sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Quick Subject Chips -->
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/layout_quick_chips"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/chip_subject_general"
+                            style="@style/Widget.Material3.Button.TonalButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="36dp"
+                            android:layout_marginEnd="6dp"
+                            android:paddingHorizontal="12dp"
+                            android:text="@string/quick_chip_general"
+                            android:textColor="@color/app_text_primary"
+                            android:textSize="12sp"
+                            app:backgroundTint="@color/app_surface_variant"
+                            app:cornerRadius="18dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/chip_subject_math"
+                            style="@style/Widget.Material3.Button.TonalButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="36dp"
+                            android:layout_marginEnd="6dp"
+                            android:paddingHorizontal="12dp"
+                            android:text="@string/quick_chip_math"
+                            android:textColor="@color/app_text_primary"
+                            android:textSize="12sp"
+                            app:backgroundTint="@color/app_surface_variant"
+                            app:cornerRadius="18dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/chip_subject_reading"
+                            style="@style/Widget.Material3.Button.TonalButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="36dp"
+                            android:layout_marginEnd="6dp"
+                            android:paddingHorizontal="12dp"
+                            android:text="@string/quick_chip_reading"
+                            android:textColor="@color/app_text_primary"
+                            android:textSize="12sp"
+                            app:backgroundTint="@color/app_surface_variant"
+                            app:cornerRadius="18dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/chip_subject_coding"
+                            style="@style/Widget.Material3.Button.TonalButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="36dp"
+                            android:layout_marginEnd="6dp"
+                            android:paddingHorizontal="12dp"
+                            android:text="@string/quick_chip_coding"
+                            android:textColor="@color/app_text_primary"
+                            android:textSize="12sp"
+                            app:backgroundTint="@color/app_surface_variant"
+                            app:cornerRadius="18dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/chip_subject_science"
+                            style="@style/Widget.Material3.Button.TonalButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="36dp"
+                            android:layout_marginEnd="6dp"
+                            android:paddingHorizontal="12dp"
+                            android:text="@string/quick_chip_science"
+                            android:textColor="@color/app_text_primary"
+                            android:textSize="12sp"
+                            app:backgroundTint="@color/app_surface_variant"
+                            app:cornerRadius="18dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/chip_subject_writing"
+                            style="@style/Widget.Material3.Button.TonalButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="36dp"
+                            android:paddingHorizontal="12dp"
+                            android:text="@string/quick_chip_writing"
+                            android:textColor="@color/app_text_primary"
+                            android:textSize="12sp"
+                            app:backgroundTint="@color/app_surface_variant"
+                            app:cornerRadius="18dp" />
+                    </LinearLayout>
+                </HorizontalScrollView>
+
+                <!-- Controls Layout -->
+                <LinearLayout
+                    android:id="@+id/layout_idle_controls"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/button_start_study"
+                        style="@style/Widget.Material3.Button"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:text="@string/start_study"
+                        android:textColor="@color/app_btn_primary_text"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:backgroundTint="@color/app_btn_primary"
+                        app:cornerRadius="16dp"
+                        app:icon="@drawable/ic_play"
+                        app:iconTint="@color/app_btn_primary_text" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layout_active_controls"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/button_pause_resume"
+                            style="@style/Widget.Material3.Button.TonalButton"
+                            android:layout_width="0dp"
+                            android:layout_height="56dp"
+                            android:layout_marginEnd="6dp"
+                            android:layout_weight="1"
+                            android:text="@string/pause_study"
+                            android:textColor="@color/app_text_primary"
+                            app:backgroundTint="@color/app_surface_variant"
+                            app:cornerRadius="16dp"
+                            app:icon="@drawable/ic_pause"
+                            app:iconTint="@color/app_text_primary"
+                            app:strokeColor="@color/app_stroke"
+                            app:strokeWidth="1dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/button_stop_save"
+                            style="@style/Widget.Material3.Button"
+                            android:layout_width="0dp"
+                            android:layout_height="56dp"
+                            android:layout_marginStart="6dp"
+                            android:layout_weight="1.2"
+                            android:text="@string/stop_study"
+                            android:textColor="@color/app_btn_primary_text"
+                            android:textStyle="bold"
+                            app:backgroundTint="@color/app_btn_primary"
+                            app:cornerRadius="16dp"
+                            app:icon="@drawable/ic_check"
+                            app:iconTint="@color/app_btn_primary_text" />
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/button_discard"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/discard_study"
+                        android:textColor="@color/app_text_muted" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 3. Today's Separate Sessions Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="4dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:letterSpacing="0.08"
+                android:text="@string/today_sessions_header"
+                android:textColor="@color/app_text_secondary"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textAllCaps="true" />
+
+            <TextView
+                android:id="@+id/text_sessions_badge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_stat_card"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:textColor="@color/app_text_primary"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                tools:text="3 sessions" />
+        </LinearLayout>
+
+        <!-- Sessions RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_today_sessions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            tools:itemCount="2"
+            tools:listitem="@layout/item_today_session" />
+
+        <!-- Empty state for today's sessions -->
+        <LinearLayout
+            android:id="@+id/layout_empty_today_sessions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="4dp"
+            android:layout_marginVertical="12dp"
+            android:background="@drawable/bg_stat_card"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="28dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:lineSpacingExtra="4dp"
+                android:text="@string/no_today_sessions"
+                android:textColor="@color/app_text_muted"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

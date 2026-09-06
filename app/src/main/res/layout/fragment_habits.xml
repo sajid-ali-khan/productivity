@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_bg">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="96dp">
+
+            <!-- Today's Progress Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/progress_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="10dp"
+                app:cardBackgroundColor="@color/app_surface"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/app_stroke"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="18dp">
+
+                    <TextView
+                        android:id="@+id/text_date_header"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:letterSpacing="0.08"
+                        android:textColor="@color/app_text_muted"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textAllCaps="true"
+                        tools:text="TODAY • SUN, SEP 6" />
+
+                    <TextView
+                        android:id="@+id/text_habits_completed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:textColor="@color/app_text_primary"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        tools:text="3 of 4 completed (75%)" />
+
+                    <com.google.android.material.progressindicator.LinearProgressIndicator
+                        android:id="@+id/progress_indicator"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        app:indicatorColor="@color/app_text_primary"
+                        app:trackColor="@color/app_stroke"
+                        app:trackCornerRadius="4dp"
+                        app:trackThickness="8dp"
+                        tools:progress="75" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Word of the Day Spotlight Card (Option A: Speaking & English Vocabulary) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_word_of_the_day"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="12dp"
+                app:cardBackgroundColor="@color/app_surface"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/app_stroke"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="18dp">
+
+                    <!-- Header Row: Category Badge & Action Buttons -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:letterSpacing="0.08"
+                            android:text="@string/word_of_the_day_badge"
+                            android:textColor="@color/app_text_muted"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+
+                        <!-- Pronounce Audio Button -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/button_listen_audio"
+                            style="@style/Widget.Material3.Button.TonalButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="36dp"
+                            android:layout_marginEnd="6dp"
+                            android:paddingHorizontal="10dp"
+                            android:text="@string/listen_pronunciation"
+                            android:textColor="@color/app_text_primary"
+                            android:textSize="12sp"
+                            app:backgroundTint="@color/app_surface_variant"
+                            app:cornerRadius="18dp"
+                            app:icon="@drawable/ic_volume_up"
+                            app:iconSize="16dp"
+                            app:iconTint="@color/app_text_primary" />
+
+                        <!-- Save/Bookmark Toggle Button -->
+                        <ImageButton
+                            android:id="@+id/button_save_vocab"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:layout_marginEnd="4dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/vocab_saved"
+                            android:src="@drawable/ic_bookmark_border"
+                            app:tint="@color/app_text_secondary" />
+
+                        <!-- Expand / Collapse Button -->
+                        <ImageButton
+                            android:id="@+id/button_toggle_vocab_expand"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/word_of_the_day_title"
+                            android:src="@drawable/ic_expand_more"
+                            app:tint="@color/app_text_secondary" />
+                    </LinearLayout>
+
+                    <!-- Word & Phonetic Row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="bottom"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/text_vocab_word"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/app_text_primary"
+                            android:textSize="24sp"
+                            android:textStyle="bold"
+                            tools:text="Articulate" />
+
+                        <TextView
+                            android:id="@+id/text_vocab_phonetic"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:textColor="@color/app_text_muted"
+                            android:textSize="13sp"
+                            tools:text="/ɑːrˈtɪk.jə.leɪt/" />
+
+                        <TextView
+                            android:id="@+id/text_vocab_pos"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:textStyle="italic"
+                            android:textColor="@color/app_text_secondary"
+                            android:textSize="12sp"
+                            tools:text="• adjective" />
+                    </LinearLayout>
+
+                    <!-- Definition -->
+                    <TextView
+                        android:id="@+id/text_vocab_definition"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:lineSpacingExtra="3dp"
+                        android:textColor="@color/app_text_primary"
+                        android:textSize="14sp"
+                        tools:text="Expressing ideas clearly, coherently, and effortlessly in speech." />
+
+                    <!-- Expandable Speaking & Dialogue Section -->
+                    <LinearLayout
+                        android:id="@+id/layout_vocab_details"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="vertical">
+
+                        <!-- Practical Speaking Tip Box -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_stat_card"
+                            android:orientation="vertical"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:letterSpacing="0.06"
+                                android:text="@string/speaking_tip_label"
+                                android:textColor="@color/app_text_secondary"
+                                android:textSize="11sp"
+                                android:textStyle="bold"
+                                android:textAllCaps="true" />
+
+                            <TextView
+                                android:id="@+id/text_vocab_speaking_tip"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:lineSpacingExtra="2dp"
+                                android:textColor="@color/app_text_primary"
+                                android:textSize="13sp"
+                                tools:text="Use when praising someone's clear speech: 'You articulated that point really well.'" />
+                        </LinearLayout>
+
+                        <!-- Dialogue Example -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_stat_card"
+                            android:orientation="vertical"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:letterSpacing="0.06"
+                                android:text="@string/sample_dialogue_label"
+                                android:textColor="@color/app_text_secondary"
+                                android:textSize="11sp"
+                                android:textStyle="bold"
+                                android:textAllCaps="true" />
+
+                            <TextView
+                                android:id="@+id/text_vocab_dialogue"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:lineSpacingExtra="3dp"
+                                android:textColor="@color/app_text_primary"
+                                android:textSize="13sp"
+                                tools:text="A: Did the client grasp our proposal?\nB: Yes, she articulated our milestones so clearly that they approved right away." />
+                        </LinearLayout>
+
+                        <!-- Practice Pronouncing Action -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/button_practice_speech"
+                            style="@style/Widget.Material3.Button.TonalButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="42dp"
+                            android:layout_marginTop="10dp"
+                            android:text="@string/practice_pronouncing"
+                            android:textColor="@color/app_text_primary"
+                            android:textSize="13sp"
+                            app:backgroundTint="@color/app_surface_variant"
+                            app:cornerRadius="12dp"
+                            app:icon="@drawable/ic_volume_up"
+                            app:iconGravity="textStart"
+                            app:iconSize="16dp"
+                            app:iconTint="@color/app_text_primary" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Habits Section Header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:letterSpacing="0.06"
+                    android:text="@string/habits_title"
+                    android:textColor="@color/app_text_secondary"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/text_habit_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/app_text_muted"
+                    android:textSize="13sp"
+                    tools:text="4 habits" />
+            </LinearLayout>
+
+            <!-- Habits List -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_habits"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/item_habit" />
+
+            <!-- Empty State -->
+            <LinearLayout
+                android:id="@+id/layout_empty_habits"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="40dp"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_habits_yet"
+                    android:textColor="@color/app_text_primary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"
+                    android:text="@string/no_habits_hint"
+                    android:textColor="@color/app_text_muted"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fab_add_habit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="20dp"
+        android:text="@string/add_habit"
+        android:textColor="@color/app_btn_primary_text"
+        app:backgroundTint="@color/app_btn_primary"
+        app:cornerRadius="16dp"
+        app:elevation="4dp"
+        app:icon="@drawable/ic_add"
+        app:iconTint="@color/app_btn_primary_text" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

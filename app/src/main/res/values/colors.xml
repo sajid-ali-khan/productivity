@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base Raw Colors -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00000000</color>
+
+    <color name="zinc_950">#FF09090B</color>
+    <color name="zinc_900">#FF18181B</color>
+    <color name="zinc_850">#FF202024</color>
+    <color name="zinc_800">#FF27272A</color>
+    <color name="zinc_700">#FF3F3F46</color>
+    <color name="zinc_600">#FF52525B</color>
+    <color name="zinc_500">#FF71717A</color>
+    <color name="zinc_400">#FFA1A1AA</color>
+    <color name="zinc_300">#FFD4D4D8</color>
+    <color name="zinc_200">#FFE4E4E7</color>
+    <color name="zinc_100">#FFF4F4F5</color>
+    <color name="zinc_50">#FFFAFAFA</color>
+
+    <!-- Semantic Theme Colors for Day / Light Mode -->
+    <color name="app_bg">#FFF8FAFC</color>
+    <color name="app_surface">#FFFFFFFF</color>
+    <color name="app_surface_variant">#FFF1F5F9</color>
+    <color name="app_stroke">#FFE2E8F0</color>
+    <color name="app_stroke_light">#FFF1F5F9</color>
+    <color name="app_text_primary">#FF0F172A</color>
+    <color name="app_text_secondary">#FF475569</color>
+    <color name="app_text_muted">#FF64748B</color>
+    <color name="app_btn_primary">#FF0F172A</color>
+    <color name="app_btn_primary_text">#FFFFFFFF</color>
+    <color name="app_btn_secondary">#FFF1F5F9</color>
+    <color name="app_btn_secondary_text">#FF0F172A</color>
+    <color name="app_divider">#FFE2E8F0</color>
+    <color name="app_nav_bg">#FFFFFFFF</color>
+
+    <!-- Compatibility aliases -->
+    <color name="bg_dark">@color/app_bg</color>
+    <color name="card_dark">@color/app_surface</color>
+    <color name="border_dark">@color/app_stroke</color>
+    <color name="border_highlight">@color/app_stroke_light</color>
+    <color name="text_primary">@color/app_text_primary</color>
+    <color name="text_secondary">@color/app_text_secondary</color>
+    <color name="text_muted">@color/app_text_muted</color>
+    <color name="text_subtle">@color/app_text_muted</color>
+    <color name="btn_secondary">@color/app_btn_secondary</color>
+    <color name="btn_secondary_text">@color/app_btn_secondary_text</color>
+
+    <color name="black_950">@color/zinc_950</color>
+    <color name="black_900">@color/zinc_900</color>
+    <color name="black_800">@color/zinc_800</color>
+    <color name="black_700">@color/zinc_700</color>
+    <color name="black_600">@color/zinc_600</color>
+    <color name="black_500">@color/zinc_500</color>
+    <color name="black_400">@color/zinc_400</color>
+    <color name="black_300">@color/zinc_300</color>
+    <color name="black_200">@color/zinc_200</color>
+    <color name="black_100">@color/zinc_800</color>
+    <color name="black_50">@color/zinc_900</color>
+    <color name="black_20">@color/black</color>
+</resources>

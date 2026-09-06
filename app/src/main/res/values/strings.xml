@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Productivity</string>
+
+    <!-- Navigation -->
+    <string name="nav_habits">Habits</string>
+    <string name="nav_timer">Study Timer</string>
+    <string name="nav_reports">Reports &amp; History</string>
+
+    <!-- Habits Tab -->
+    <string name="habits_title">Today\'s Habits</string>
+    <string name="add_habit">Add Habit</string>
+    <string name="add_habit_dialog_title">New Habit</string>
+    <string name="habit_name_hint">Habit name (e.g. Read 30m, Exercise)</string>
+    <string name="habit_name_error">Please enter a habit name</string>
+    <string name="habits_completed_format">%1$d of %2$d completed</string>
+    <string name="no_habits_yet">No habits yet</string>
+    <string name="no_habits_hint">Add daily habits to track consistency each day.</string>
+    <string name="delete_habit_title">Delete Habit</string>
+    <string name="delete_habit_confirm">Are you sure you want to delete \"%1$s\"?</string>
+    <string name="delete">Delete</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- Timer Tab -->
+    <string name="study_timer_title">Study Timer</string>
+    <string name="study_status_ready">Ready to study</string>
+    <string name="study_status_active">Study session active</string>
+    <string name="study_status_paused">Session paused</string>
+    <string name="start_study">Start Timer</string>
+    <string name="pause_study">Pause</string>
+    <string name="resume_study">Resume</string>
+    <string name="stop_study">Save Session</string>
+    <string name="discard_study">Discard</string>
+    <string name="study_subject_label">Subject / Topic</string>
+    <string name="study_subject_hint">e.g. Math, Programming, Reading</string>
+    <string name="study_today_header">Today\'s Study Time</string>
+    <string name="study_whole_time_header">Whole Study Time</string>
+    <string name="study_sessions_today_format">%1$d sessions today</string>
+    <string name="session_saved">Study session saved</string>
+    <string name="session_discarded">Session discarded</string>
+    <string name="session_deleted">Study session deleted</string>
+    <string name="delete_session_confirm">Are you sure you want to delete this session?</string>
+    <string name="session_too_short">Session was under 5 seconds and not recorded</string>
+    <string name="study_goal_label">Daily Goal: 2h</string>
+    <string name="today_sessions_header">Today\'s Study Sessions</string>
+    <string name="today_sessions_count_format">%1$d sessions recorded</string>
+    <string name="no_today_sessions">No study sessions recorded yet today.\nStart your first session above!</string>
+    <string name="session_number_prefix">Session %1$d</string>
+    <string name="quick_chip_general">General</string>
+    <string name="quick_chip_math">Math</string>
+    <string name="quick_chip_reading">Reading</string>
+    <string name="quick_chip_coding">Coding</string>
+    <string name="quick_chip_science">Science</string>
+    <string name="quick_chip_writing">Writing</string>
+
+    <!-- Reports & History Tab -->
+    <string name="reports_title">Performance &amp; History</string>
+    <string name="habits_performance_header">Habits Performance</string>
+    <string name="habits_trend_header">7-Day Habits Trend</string>
+    <string name="habits_trend_subtitle">Daily completion rate across tracked habits</string>
+    <string name="study_graph_header">7-Day Study Time Graph</string>
+    <string name="study_graph_subtitle">Daily study duration &amp; session count</string>
+    <string name="habits_followed_header">Habits Followed</string>
+    <string name="habits_skipped_header">Habits Skipped</string>
+    <string name="overall_rate_label">Overall Completion Rate</string>
+    <string name="habit_followed_rate_format">%1$d of %2$d days (%3$d%%)</string>
+    <string name="habit_skipped_count_format">%1$d days skipped</string>
+    <string name="habits_followed_count">Followed: %1$d days</string>
+    <string name="habits_skipped_count">Skipped: %1$d days</string>
+    <string name="habit_streak">Streak: %1$d days</string>
+    <string name="study_history_header">Daily Study Time History</string>
+    <string name="study_history_subtitle">Tracked day by day with separate sessions</string>
+    <string name="no_study_history">No study sessions recorded yet</string>
+    <string name="no_history_records">No habit logs recorded yet</string>
+    <string name="habit_history_header">Daily Habit Logs</string>
+    <string name="filter_all">All</string>
+    <string name="filter_followed">Followed</string>
+    <string name="filter_skipped">Skipped</string>
+    <string name="view_habits_tab">Habits</string>
+    <string name="view_study_tab">Study History</string>
+    <string name="sessions_breakdown_label">Sessions Breakdown</string>
+    <string name="all_time_study_label">All-Time Total</string>
+
+    <!-- Date formats & common -->
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="close">Close</string>
+
+    <!-- Word of the Day & Vocabulary -->
+    <string name="word_of_the_day_title">Word of the Day</string>
+    <string name="word_of_the_day_badge">VOCABULARY • SPEAKING</string>
+    <string name="listen_pronunciation">Listen</string>
+    <string name="speaking_tip_label">Speaking Tip</string>
+    <string name="sample_dialogue_label">Everyday Speech Example</string>
+    <string name="practice_pronouncing">Practice Speaking</string>
+    <string name="vocab_saved">Word saved to favorites</string>
+    <string name="vocab_unsaved">Word removed from favorites</string>
+
+    <!-- Preferences & Appearance -->
+    <string name="preferences_title">Preferences &amp; Style</string>
+    <string name="appearance_header">Theme Appearance</string>
+    <string name="theme_dark">Dark Mode</string>
+    <string name="theme_light">Light Mode</string>
+    <string name="theme_system">System Default</string>
+    <string name="typography_header">Font Style</string>
+    <string name="font_space_grotesk">Space Grotesk</string>
+    <string name="font_eb_garamond">EB Garamond</string>
+    <string name="font_exo2">Exo 2</string>
+    <string name="font_zilla_slab">Zilla Slab</string>
+    <string name="font_acme">Acme</string>
+    <string name="font_system">System Default</string>
+    <string name="font_applied">Font style updated</string>
+    <string name="theme_applied">Theme updated</string>
+</resources>

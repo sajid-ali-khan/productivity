@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_session"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="6dp"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardBackgroundColor="@color/app_surface"
+    app:cardCornerRadius="18dp"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/app_stroke"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!-- Active indicator badge -->
+            <TextView
+                android:id="@+id/badge_active_session"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/bg_stat_card"
+                android:letterSpacing="0.08"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="3dp"
+                android:text="● ACTIVE NOW"
+                android:textColor="@color/app_text_primary"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <!-- Primary Subject Name -->
+            <TextView
+                android:id="@+id/text_session_subject"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/app_text_primary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:text="Math • Calculus" />
+
+            <!-- Time range (Refactoring UI: muted secondary color) -->
+            <TextView
+                android:id="@+id/text_session_time_range"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:textColor="@color/app_text_secondary"
+                android:textSize="13sp"
+                tools:text="9:15 AM – 9:45 AM" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <!-- Duration pill -->
+            <TextView
+                android:id="@+id/text_session_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_stat_card"
+                android:letterSpacing="0.04"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="6dp"
+                android:textColor="@color/app_text_primary"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                tools:text="30m" />
+
+            <!-- Switch / Resume button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_switch_session"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_marginStart="8dp"
+                android:paddingHorizontal="10dp"
+                android:text="@string/resume_study"
+                android:textColor="@color/app_text_primary"
+                android:textSize="12sp"
+                app:backgroundTint="@color/app_surface_variant"
+                app:cornerRadius="18dp"
+                app:icon="@drawable/ic_play"
+                app:iconSize="14dp"
+                app:iconTint="@color/app_text_primary" />
+
+            <!-- Delete session button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_delete_session"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:layout_marginStart="2dp"
+                android:contentDescription="@string/delete"
+                app:icon="@drawable/ic_delete"
+                app:iconTint="@color/app_text_muted" />
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

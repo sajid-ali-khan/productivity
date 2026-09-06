@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="6dp"
+    app:cardBackgroundColor="@color/app_surface"
+    app:cardCornerRadius="18dp"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/app_stroke"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/text_study_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/app_text_primary"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                tools:text="Yesterday • Sat, Sep 5" />
+
+            <TextView
+                android:id="@+id/text_study_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/app_text_primary"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                tools:text="2h 15m" />
+        </LinearLayout>
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/progress_study_day"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:indicatorColor="@color/app_text_primary"
+            app:trackColor="@color/app_stroke"
+            app:trackCornerRadius="4dp"
+            app:trackThickness="8dp"
+            tools:progress="100" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/text_study_sessions_detail"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/app_text_muted"
+                android:textSize="12sp"
+                tools:text="3 study sessions recorded" />
+
+            <TextView
+                android:id="@+id/text_study_goal_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/app_text_secondary"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                tools:text="Goal Achieved (112%)" />
+        </LinearLayout>
+
+        <!-- Separate Sessions Breakdown Section -->
+        <LinearLayout
+            android:id="@+id/layout_sessions_breakdown"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_stat_card"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:letterSpacing="0.08"
+                android:text="@string/sessions_breakdown_label"
+                android:textColor="@color/app_text_muted"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:textAllCaps="true" />
+
+            <TextView
+                android:id="@+id/text_sessions_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:lineSpacingExtra="5dp"
+                android:textColor="@color/app_text_secondary"
+                android:textSize="12sp"
+                tools:text="• Session 1: Math (45m • 9:00 AM – 9:45 AM)\n• Session 2: Physics (30m • 10:15 AM – 10:45 AM)\n• Session 3: Chemistry (1h • 2:00 PM – 3:00 PM)" />
+        </LinearLayout>
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
