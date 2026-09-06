@@ -1,0 +1,96 @@
+name: Build & Publish Release APK
+
+on:
+  push:
+    tags:
+      - 'v*' # Trigger on version tags (e.g. v1.0.0, v1.0, etc.)
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Release tag (e.g. v1.0.0)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build & Release APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Ensure .env file exists
+        run: |
+          if [ ! -f .env ]; then
+            if [ -f .env.example ]; then
+              cp .env.example .env
+            else
+              touch .env
+            fi
+          fi
+
+      - name: Grant execute permission for gradlew
+        run: |
+          if [ -f ./gradlew ]; then
+            chmod +x gradlew
+          else
+            gradle wrapper
+            chmod +x gradlew
+          fi
+
+      - name: Build APKs
+        run: ./gradlew assembleDebug assembleRelease --stacktrace
+
+      - name: Prepare APK Artifacts
+        id: prepare_artifacts
+        run: |
+          mkdir -p release-apks
+          
+          # Find and copy generated APKs
+          if [ -f app/build/outputs/apk/release/app-release-unsigned.apk ]; then
+            cp app/build/outputs/apk/release/app-release-unsigned.apk release-apks/app-release-unsigned.apk
+          fi
+          if [ -f app/build/outputs/apk/release/app-release.apk ]; then
+            cp app/build/outputs/apk/release/app-release.apk release-apks/app-release.apk
+          fi
+          if [ -f app/build/outputs/apk/debug/app-debug.apk ]; then
+            cp app/build/outputs/apk/debug/app-debug.apk release-apks/app-debug.apk
+          fi
+          
+          ls -la release-apks/
+
+      - name: Upload APKs to GitHub Actions Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apks
+          path: release-apks/*
+          retention-days: 30
+
+      - name: Create GitHub Release and Upload APKs
+        if: startsWith(github.ref, 'refs/tags/v') || github.event.inputs.tag_name != ''
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.tag_name || github.ref_name }}
+          name: Release ${{ github.event.inputs.tag_name || github.ref_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: release-apks/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
