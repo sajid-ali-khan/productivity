@@ -15,6 +15,8 @@ class ProductivityRepository(
 
     val vocabHistory: Flow<List<VocabWordEntity>> = vocabDao.getAllVocabHistory()
 
+    val savedVocabWords: Flow<List<VocabWordEntity>> = vocabDao.getSavedWords()
+
     suspend fun ensureWordOfTheDay(date: String) {
         val existing = vocabDao.getWordForDateSync(date)
         if (existing == null) {

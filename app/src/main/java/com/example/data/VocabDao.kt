@@ -22,4 +22,7 @@ interface VocabDao {
 
     @Query("SELECT * FROM vocab_words ORDER BY date DESC")
     fun getAllVocabHistory(): Flow<List<VocabWordEntity>>
+
+    @Query("SELECT * FROM vocab_words WHERE isSaved = 1 ORDER BY date DESC")
+    fun getSavedWords(): Flow<List<VocabWordEntity>>
 }

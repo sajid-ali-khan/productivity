@@ -58,6 +58,13 @@ class ProductivityViewModel(
             initialValue = emptyList()
         )
 
+    val savedVocabWords: StateFlow<List<VocabWordEntity>> = repository.savedVocabWords
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
     init {
         val today = DateUtils.getTodayDateString()
         viewModelScope.launch {

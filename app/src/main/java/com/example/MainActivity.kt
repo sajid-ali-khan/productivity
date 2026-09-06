@@ -12,6 +12,7 @@ import com.example.databinding.ActivityMainBinding
 import com.example.ui.HabitsFragment
 import com.example.ui.PreferencesBottomSheetFragment
 import com.example.ui.ReportsFragment
+import com.example.ui.SavedVocabFragment
 import com.example.ui.StudyTimerFragment
 
 class MainActivity : AppCompatActivity() {
@@ -30,6 +31,7 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.topToolbar)
 
+        setupBackStackNavigation()
         setupBottomNavigation()
 
         if (savedInstanceState == null) {
@@ -44,6 +46,18 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            android.R.id.home -> {
+                if (supportFragmentManager.backStackEntryCount > 0) {
+                    supportFragmentManager.popBackStack()
+                    true
+                } else {
+                    super.onOptionsItemSelected(item)
+                }
+            }
+            R.id.action_saved_vocab -> {
+                openSavedVocabFragment()
+                true
+            }
             R.id.action_preferences -> {
                 val bottomSheet = PreferencesBottomSheetFragment()
                 bottomSheet.show(supportFragmentManager, PreferencesBottomSheetFragment.TAG)
@@ -53,8 +67,44 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun openSavedVocabFragment() {
+        supportActionBar?.title = getString(R.string.saved_vocabulary)
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, SavedVocabFragment())
+            .addToBackStack(SavedVocabFragment.TAG)
+            .commit()
+    }
+
+    private fun setupBackStackNavigation() {
+        supportFragmentManager.addOnBackStackChangedListener {
+            val isBackStackEmpty = supportFragmentManager.backStackEntryCount == 0
+            supportActionBar?.setDisplayHomeAsUpEnabled(!isBackStackEmpty)
+            supportActionBar?.setDisplayShowHomeEnabled(!isBackStackEmpty)
+
+            if (isBackStackEmpty) {
+                // Restore title based on current selected bottom nav item
+                updateTitleForCurrentTab()
+            }
+        }
+    }
+
+    private fun updateTitleForCurrentTab() {
+        val titleRes = when (binding.bottomNavigation.selectedItemId) {
+            R.id.nav_habits -> R.string.habits_title
+            R.id.nav_timer -> R.string.study_timer_title
+            R.id.nav_reports -> R.string.reports_title
+            else -> R.string.app_name
+        }
+        supportActionBar?.title = getString(titleRes)
+    }
+
     private fun setupBottomNavigation() {
         binding.bottomNavigation.setOnItemSelectedListener { item ->
+            // Clear any sub-screens on the backstack when switching tabs
+            if (supportFragmentManager.backStackEntryCount > 0) {
+                supportFragmentManager.popBackStackImmediate(null, androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            }
+
             when (item.itemId) {
                 R.id.nav_habits -> {
                     switchFragment(HabitsFragment(), getString(R.string.habits_title))

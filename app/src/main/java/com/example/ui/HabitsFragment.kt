@@ -105,7 +105,7 @@ class HabitsFragment : Fragment(), TextToSpeech.OnInitListener {
         // Listen Audio (Pronunciation)
         binding.buttonListenAudio.setOnClickListener {
             currentWord?.let { word ->
-                speakOrPlayWord(word)
+                speakWord(word)
             }
         }
 
@@ -136,45 +136,21 @@ class HabitsFragment : Fragment(), TextToSpeech.OnInitListener {
         }
     }
 
-    private fun speakOrPlayWord(word: VocabWordEntity) {
-        if (!word.audioUrl.isNullOrBlank()) {
-            try {
-                mediaPlayer?.release()
-                mediaPlayer = MediaPlayer().apply {
-                    setAudioAttributes(
-                        AudioAttributes.Builder()
-                            .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                            .setUsage(AudioAttributes.USAGE_ASSISTANCE_ACCESSIBILITY)
-                            .build()
-                    )
-                    setDataSource(word.audioUrl)
-                    setOnPreparedListener { start() }
-                    setOnErrorListener { _, _, _ ->
-                        fallbackTtsSpeak(word.word)
-                        true
-                    }
-                    prepareAsync()
-                }
-                return
-            } catch (_: Exception) {
-                fallbackTtsSpeak(word.word)
-            }
-        } else {
-            fallbackTtsSpeak(word.word)
-        }
-    }
-
-    private fun fallbackTtsSpeak(text: String) {
+    private fun speakWord(word: VocabWordEntity) {
         if (isTtsReady && textToSpeech != null) {
-            textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "vocab_utterance")
-            Toast.makeText(requireContext(), "Pronouncing: $text", Toast.LENGTH_SHORT).show()
+            textToSpeech?.speak(word.word, TextToSpeech.QUEUE_FLUSH, null, "vocab_word_utterance")
+            Toast.makeText(requireContext(), "Pronouncing: ${word.word}", Toast.LENGTH_SHORT).show()
+        } else if (textToSpeech != null) {
+            // Attempt to speak with available default engine language
+            textToSpeech?.speak(word.word, TextToSpeech.QUEUE_FLUSH, null, "vocab_word_utterance")
+            Toast.makeText(requireContext(), "Pronouncing: ${word.word}", Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(requireContext(), "Pronunciation: ${currentWord?.phonetic ?: text}", Toast.LENGTH_SHORT).show()
+            initTts()
+            Toast.makeText(requireContext(), "Pronunciation: ${word.phonetic.ifBlank { word.word }}", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun practiceSpeakingDialog(word: VocabWordEntity) {
-        val dialogueText = word.sampleDialogue
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Practice Speaking: ${word.word}")
             .setMessage(
@@ -185,10 +161,12 @@ class HabitsFragment : Fragment(), TextToSpeech.OnInitListener {
             .setPositiveButton("Listen to Sentence") { _, _ ->
                 if (isTtsReady && textToSpeech != null) {
                     textToSpeech?.speak(word.example, TextToSpeech.QUEUE_FLUSH, null, "sentence_utterance")
+                } else if (textToSpeech != null) {
+                    textToSpeech?.speak(word.example, TextToSpeech.QUEUE_FLUSH, null, "sentence_utterance")
                 }
             }
             .setNeutralButton("Listen to Word") { _, _ ->
-                speakOrPlayWord(word)
+                speakWord(word)
             }
             .setNegativeButton(R.string.close, null)
             .show()

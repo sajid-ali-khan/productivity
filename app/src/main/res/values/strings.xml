@@ -96,6 +96,20 @@
     <string name="practice_pronouncing">Practice Speaking</string>
     <string name="vocab_saved">Word saved to favorites</string>
     <string name="vocab_unsaved">Word removed from favorites</string>
+    <string name="saved_vocabulary">Saved Vocabulary</string>
+    <string name="saved_vocabulary_title">Saved Words</string>
+    <string name="saved_vocabulary_count_format">%1$d words saved</string>
+    <plurals name="saved_words_count">
+        <item quantity="one">%1$d word saved in your vocabulary collection</item>
+        <item quantity="other">%1$d words saved in your vocabulary collection</item>
+    </plurals>
+    <string name="search_vocab_hint">Search words, meanings, examples…</string>
+    <string name="no_search_results_title">No matching words</string>
+    <string name="no_search_results_desc">No saved words found matching \"%1$s\"</string>
+    <string name="showing_search_count">%1$d of %2$d words found</string>
+    <string name="no_saved_vocab_title">No saved words yet</string>
+    <string name="no_saved_vocab_desc">Tap the bookmark icon on any Word of the Day to save and practice it here.</string>
+    <string name="remove_from_saved">Remove from saved</string>
 
     <!-- Preferences & Appearance -->
     <string name="preferences_title">Preferences &amp; Style</string>
