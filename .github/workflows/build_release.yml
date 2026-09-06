@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       tag_name:
-        description: 'Release tag (e.g. v1.0.0)'
+        description: 'Release tag name (e.g. v1.0.0, leave empty for auto-tag)'
         required: false
         default: ''
 
@@ -34,6 +34,8 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.3.1'
 
       - name: Ensure .env file exists
         run: |
@@ -45,16 +47,47 @@ jobs:
             fi
           fi
 
-      - name: Grant execute permission for gradlew
+      - name: Setup Keystores (Debug & Release)
         run: |
-          if [ -f ./gradlew ]; then
-            chmod +x gradlew
-          else
-            gradle wrapper
-            chmod +x gradlew
+          # 1. Restore debug.keystore from base64 if present
+          if [ -f debug.keystore.base64 ]; then
+            base64 -d debug.keystore.base64 > debug.keystore
+          elif [ ! -f debug.keystore ]; then
+            keytool -genkeypair -v \
+              -keystore debug.keystore \
+              -alias androiddebugkey \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 10000 \
+              -storepass android \
+              -keypass android \
+              -dname "CN=Android Debug,O=Android,C=US"
           fi
 
-      - name: Build APKs
+          # 2. Setup upload keystore for release build
+          if [ ! -f my-upload-key.jks ]; then
+            keytool -genkeypair -v \
+              -keystore my-upload-key.jks \
+              -alias upload \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 10000 \
+              -storepass android \
+              -keypass android \
+              -dname "CN=Productivity Release,O=Android,C=US"
+          fi
+
+      - name: Generate Gradle Wrapper if missing
+        run: |
+          if [ ! -f ./gradlew ]; then
+            gradle wrapper --gradle-version 9.3.1
+          fi
+          chmod +x gradlew
+
+      - name: Build APKs (Debug & Release)
+        env:
+          STORE_PASSWORD: android
+          KEY_PASSWORD: android
         run: ./gradlew assembleDebug assembleRelease --stacktrace
 
       - name: Prepare APK Artifacts
@@ -62,35 +95,39 @@ jobs:
         run: |
           mkdir -p release-apks
           
-          # Find and copy generated APKs
-          if [ -f app/build/outputs/apk/release/app-release-unsigned.apk ]; then
-            cp app/build/outputs/apk/release/app-release-unsigned.apk release-apks/app-release-unsigned.apk
-          fi
-          if [ -f app/build/outputs/apk/release/app-release.apk ]; then
-            cp app/build/outputs/apk/release/app-release.apk release-apks/app-release.apk
-          fi
-          if [ -f app/build/outputs/apk/debug/app-debug.apk ]; then
-            cp app/build/outputs/apk/debug/app-debug.apk release-apks/app-debug.apk
-          fi
+          # Copy all generated APKs
+          find app/build/outputs/apk -name "*.apk" -type f -exec cp {} release-apks/ \;
           
+          echo "Generated APK files:"
           ls -la release-apks/
 
       - name: Upload APKs to GitHub Actions Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: android-apks
-          path: release-apks/*
+          path: release-apks/*.apk
           retention-days: 30
 
+      - name: Determine Release Tag
+        id: release_tag
+        run: |
+          if [ -n "${{ github.event.inputs.tag_name }}" ]; then
+            TAG="${{ github.event.inputs.tag_name }}"
+          elif [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            TAG="${GITHUB_REF#refs/tags/}"
+          else
+            TAG="v1.0.${{ github.run_number }}"
+          fi
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
       - name: Create GitHub Release and Upload APKs
-        if: startsWith(github.ref, 'refs/tags/v') || github.event.inputs.tag_name != ''
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event.inputs.tag_name || github.ref_name }}
-          name: Release ${{ github.event.inputs.tag_name || github.ref_name }}
+          tag_name: ${{ steps.release_tag.outputs.tag }}
+          name: Release ${{ steps.release_tag.outputs.tag }}
           draft: false
           prerelease: false
           generate_release_notes: true
-          files: release-apks/*
+          files: release-apks/*.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
