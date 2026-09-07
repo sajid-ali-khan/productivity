@@ -4,8 +4,32 @@
 
     <!-- Navigation -->
     <string name="nav_habits">Habits</string>
+    <string name="nav_tasks">Tasks</string>
     <string name="nav_timer">Study Timer</string>
     <string name="nav_reports">Reports &amp; History</string>
+
+    <!-- Tasks Tab (Google Tasks Style) -->
+    <string name="tasks_title">Tasks</string>
+    <string name="my_tasks">My Tasks</string>
+    <string name="new_list">+ New list</string>
+    <string name="create_new_list">Create new list</string>
+    <string name="list_name_hint">Enter list name</string>
+    <string name="rename_list">Rename list</string>
+    <string name="delete_completed_tasks">Delete completed tasks</string>
+    <string name="delete_list">Delete list</string>
+    <string name="completed_header_format">Completed (%1$d)</string>
+    <string name="sort_by">Sort by</string>
+    <string name="sort_my_order">My order</string>
+    <string name="sort_starred">Starred first</string>
+    <string name="sort_alphabetical">Alphabetical</string>
+    <string name="sort_newest">Newest first</string>
+    <string name="add_task_dialog_title">New task</string>
+    <string name="task_title_hint">Task title</string>
+    <string name="task_details_hint">Details / notes (optional)</string>
+    <string name="no_tasks_in_list">No tasks in this list</string>
+    <string name="no_tasks_hint">Tap + below to add a task</string>
+    <string name="no_starred_tasks">No starred tasks</string>
+    <string name="no_starred_tasks_hint">Star important tasks to see them collected here</string>
 
     <!-- Habits Tab -->
     <string name="habits_title">Today\'s Habits</string>

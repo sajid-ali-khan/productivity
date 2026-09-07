@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Top Task Lists Bar -->
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tab_layout_task_lists"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@color/app_bg"
+            app:tabGravity="start"
+            app:tabIndicatorColor="@color/app_text_primary"
+            app:tabIndicatorFullWidth="false"
+            app:tabIndicatorHeight="3dp"
+            app:tabMode="scrollable"
+            app:tabRippleColor="?attr/colorControlHighlight"
+            app:tabSelectedTextColor="@color/app_text_primary"
+            app:tabTextAppearance="@style/TextAppearance.Material3.LabelLarge"
+            app:tabTextColor="@color/app_text_secondary" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/app_divider" />
+
+        <!-- Tasks Content ScrollView -->
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:fillViewport="true"
+            android:paddingBottom="96dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="12dp">
+
+                <!-- Active Tasks Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_active_tasks"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="@color/app_surface"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/app_stroke"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingVertical="8dp">
+
+                        <!-- Card Header -->
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingHorizontal="16dp"
+                            android:paddingVertical="8dp">
+
+                            <TextView
+                                android:id="@+id/text_list_title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerVertical="true"
+                                android:layout_toStartOf="@id/layout_header_actions"
+                                android:textColor="@color/app_text_primary"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                tools:text="My Tasks" />
+
+                            <LinearLayout
+                                android:id="@+id/layout_header_actions"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <ImageButton
+                                    android:id="@+id/btn_sort_tasks"
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:background="?attr/selectableItemBackgroundBorderless"
+                                    android:contentDescription="Sort tasks"
+                                    android:padding="8dp"
+                                    android:scaleType="fitCenter"
+                                    android:src="@drawable/ic_swap_vert"
+                                    app:tint="@color/app_text_secondary" />
+
+                                <ImageButton
+                                    android:id="@+id/btn_list_menu"
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:background="?attr/selectableItemBackgroundBorderless"
+                                    android:contentDescription="List options"
+                                    android:padding="8dp"
+                                    android:scaleType="fitCenter"
+                                    android:src="@drawable/ic_more_vert"
+                                    app:tint="@color/app_text_secondary" />
+                            </LinearLayout>
+                        </RelativeLayout>
+
+                        <!-- Active Tasks RecyclerView -->
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recycler_active_tasks"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:nestedScrollingEnabled="false"
+                            tools:itemCount="3"
+                            tools:listitem="@layout/item_task_active" />
+
+                        <!-- Empty State for Active Tasks -->
+                        <LinearLayout
+                            android:id="@+id/layout_empty_tasks"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:paddingHorizontal="24dp"
+                            android:paddingVertical="32dp"
+                            android:visibility="gone"
+                            tools:visibility="visible">
+
+                            <TextView
+                                android:id="@+id/text_empty_title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/no_tasks_in_list"
+                                android:textColor="@color/app_text_secondary"
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/text_empty_hint"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="@string/no_tasks_hint"
+                                android:textColor="@color/app_text_muted"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Completed Tasks Card / Collapsible Section -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_completed_tasks"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:cardBackgroundColor="@color/app_surface"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/app_stroke"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <!-- Completed Header (Clickable to expand/collapse) -->
+                        <RelativeLayout
+                            android:id="@+id/btn_toggle_completed"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="?attr/selectableItemBackground"
+                            android:paddingHorizontal="16dp"
+                            android:paddingVertical="14dp">
+
+                            <TextView
+                                android:id="@+id/text_completed_header"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerVertical="true"
+                                android:textColor="@color/app_text_primary"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                tools:text="Completed (5)" />
+
+                            <ImageView
+                                android:id="@+id/icon_expand_completed"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:contentDescription="Expand or collapse completed tasks"
+                                android:src="@drawable/ic_expand_less"
+                                app:tint="@color/app_text_secondary" />
+                        </RelativeLayout>
+
+                        <!-- Completed Tasks RecyclerView -->
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recycler_completed_tasks"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:nestedScrollingEnabled="false"
+                            android:paddingBottom="8dp"
+                            tools:itemCount="5"
+                            tools:listitem="@layout/item_task_completed" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
+
+    <!-- Floating Action Button for adding a task -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_add_task"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="20dp"
+        android:contentDescription="Add new task"
+        android:src="@drawable/ic_add"
+        app:backgroundTint="@color/app_btn_primary"
+        app:elevation="4dp"
+        app:fabSize="normal"
+        app:tint="@color/app_btn_primary_text" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

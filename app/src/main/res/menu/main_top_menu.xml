@@ -5,10 +5,12 @@
         android:id="@+id/action_saved_vocab"
         android:icon="@drawable/ic_bookmark_border"
         android:title="@string/saved_vocabulary"
+        app:iconTint="@color/app_text_primary"
         app:showAsAction="always" />
     <item
         android:id="@+id/action_preferences"
         android:icon="@drawable/ic_settings"
         android:title="@string/preferences_title"
+        app:iconTint="@color/app_text_primary"
         app:showAsAction="always" />
 </menu>

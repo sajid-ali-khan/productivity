@@ -129,20 +129,42 @@
                     android:orientation="vertical"
                     android:padding="20dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:letterSpacing="0.08"
-                        android:text="@string/habits_performance_header"
-                        android:textColor="@color/app_text_muted"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textAllCaps="true" />
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/text_habit_score_header"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:layout_toStartOf="@id/btn_info_habit_score"
+                            android:letterSpacing="0.08"
+                            android:text="ALL-TIME HABIT SCORE"
+                            android:textColor="@color/app_text_muted"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:textAllCaps="true" />
+
+                        <ImageButton
+                            android:id="@+id/btn_info_habit_score"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="All-time habit score formula info"
+                            android:padding="4dp"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/ic_info"
+                            app:tint="@color/app_text_secondary" />
+                    </RelativeLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="10dp"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
@@ -159,7 +181,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
-                            android:text="@string/overall_rate_label"
+                            android:text="Overall Consistency Rate"
                             android:textColor="@color/app_text_secondary"
                             android:textSize="14sp" />
                     </LinearLayout>

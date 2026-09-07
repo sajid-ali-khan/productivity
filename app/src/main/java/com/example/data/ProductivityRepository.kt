@@ -7,7 +7,8 @@ import kotlinx.coroutines.flow.map
 class ProductivityRepository(
     private val habitDao: HabitDao,
     private val studyDao: StudyDao,
-    private val vocabDao: VocabDao
+    private val vocabDao: VocabDao,
+    private val taskDao: TaskDao
 ) {
 
     // 0. Word of the Day & Vocabulary
@@ -84,21 +85,41 @@ class ProductivityRepository(
     }
 
     // 2. Habit Reports & History
+    // All-Time Habit Score across all recorded days and active habits
+    val allTimeHabitScore: Flow<Int> = combine(
+        habitDao.getActiveHabits(),
+        habitDao.getAllLogs()
+    ) { activeHabits, logs ->
+        if (activeHabits.isEmpty()) return@combine 0
+
+        val todayStr = DateUtils.getTodayDateString()
+        val allRecordedDates = (logs.map { it.date } + todayStr).distinct()
+        val totalOpportunities = allRecordedDates.size * activeHabits.size
+        val totalCompleted = logs.count { it.isCompleted }
+
+        if (totalOpportunities > 0) {
+            ((totalCompleted * 100) / totalOpportunities).coerceIn(0, 100)
+        } else {
+            0
+        }
+    }
+
     // Generates reports based on how many habits user followed and skipped
     val habitReports: Flow<List<HabitReportItem>> = combine(
-        habitDao.getAllHabits(),
+        habitDao.getActiveHabits(),
         habitDao.getAllLogs()
     ) { habits, logs ->
         val logsByHabit = logs.groupBy { it.habitId }
+        val todayStr = DateUtils.getTodayDateString()
+        val totalRecordedDays = (logs.map { it.date } + todayStr).distinct().size
 
         habits.map { habit ->
             val habitLogs = logsByHabit[habit.id] ?: emptyList()
             val followedCount = habitLogs.count { it.isCompleted }
-            val skippedCount = habitLogs.count { !it.isCompleted }
-            val totalTracked = followedCount + skippedCount
+            val skippedCount = (totalRecordedDays - followedCount).coerceAtLeast(0)
 
-            val ratePercent = if (totalTracked > 0) {
-                (followedCount * 100) / totalTracked
+            val ratePercent = if (totalRecordedDays > 0) {
+                ((followedCount * 100) / totalRecordedDays).coerceIn(0, 100)
             } else {
                 0
             }
@@ -119,7 +140,7 @@ class ProductivityRepository(
                 name = habit.name,
                 followedDays = followedCount,
                 skippedDays = skippedCount,
-                totalDaysTracked = totalTracked,
+                totalDaysTracked = totalRecordedDays,
                 completionRatePercent = ratePercent,
                 currentStreak = streak
             )
@@ -173,6 +194,11 @@ class ProductivityRepository(
 
     suspend fun deleteStudySession(id: Long) = studyDao.deleteSessionById(id)
 
+    suspend fun getStudySessionByDateAndSubject(date: String, subject: String): StudySessionEntity? {
+        val cleanSubject = subject.trim().ifBlank { "General" }
+        return studyDao.getSessionByDateAndSubject(date, cleanSubject)
+    }
+
     suspend fun saveStudySession(
         date: String,
         startTime: Long,
@@ -181,14 +207,26 @@ class ProductivityRepository(
         subject: String = "General"
     ): Long {
         val cleanSubject = subject.trim().ifBlank { "General" }
-        val session = StudySessionEntity(
-            date = date,
-            startTime = startTime,
-            endTime = endTime,
-            durationSeconds = durationSeconds,
-            subject = cleanSubject
-        )
-        return studyDao.insertSession(session)
+        val existing = studyDao.getSessionByDateAndSubject(date, cleanSubject)
+        return if (existing != null) {
+            studyDao.updateSession(
+                existing.copy(
+                    durationSeconds = durationSeconds,
+                    endTime = endTime,
+                    subject = cleanSubject
+                )
+            )
+            existing.id
+        } else {
+            val session = StudySessionEntity(
+                date = date,
+                startTime = startTime,
+                endTime = endTime,
+                durationSeconds = durationSeconds,
+                subject = cleanSubject
+            )
+            studyDao.insertSession(session)
+        }
     }
 
     suspend fun updateStudySession(
@@ -288,5 +326,78 @@ class ProductivityRepository(
                 sessionCount = daySessions.size
             )
         }
+    }
+
+    // 4. Tasks & Todo Management (Google Tasks Style)
+    val allTaskLists: Flow<List<TaskListEntity>> = taskDao.getAllLists()
+
+    val starredTasks: Flow<List<TaskEntity>> = taskDao.getStarredTasks()
+
+    fun getTasksForList(listId: Long): Flow<List<TaskEntity>> = taskDao.getTasksForList(listId)
+
+    suspend fun addTask(
+        listId: Long,
+        title: String,
+        notes: String = "",
+        isStarred: Boolean = false
+    ): Long {
+        val cleanTitle = title.trim()
+        if (cleanTitle.isBlank()) return -1L
+        val task = TaskEntity(
+            listId = listId,
+            title = cleanTitle,
+            notes = notes.trim(),
+            isCompleted = false,
+            isStarred = isStarred,
+            createdAt = System.currentTimeMillis()
+        )
+        return taskDao.insertTask(task)
+    }
+
+    suspend fun setTaskCompletion(task: TaskEntity, isCompleted: Boolean) {
+        val updated = task.copy(
+            isCompleted = isCompleted,
+            completedAt = if (isCompleted) System.currentTimeMillis() else null
+        )
+        taskDao.updateTask(updated)
+    }
+
+    suspend fun setTaskStarred(task: TaskEntity, isStarred: Boolean) {
+        val updated = task.copy(isStarred = isStarred)
+        taskDao.updateTask(updated)
+    }
+
+    suspend fun updateTask(task: TaskEntity) {
+        taskDao.updateTask(task)
+    }
+
+    suspend fun deleteTask(taskId: Long) {
+        taskDao.deleteTaskById(taskId)
+    }
+
+    suspend fun deleteCompletedTasksForList(listId: Long) {
+        taskDao.deleteCompletedTasksForList(listId)
+    }
+
+    suspend fun addTaskList(name: String): Long {
+        val cleanName = name.trim()
+        if (cleanName.isBlank()) return -1L
+        return taskDao.insertList(
+            TaskListEntity(
+                name = cleanName,
+                isDefault = false
+            )
+        )
+    }
+
+    suspend fun renameTaskList(listId: Long, newName: String) {
+        val cleanName = newName.trim()
+        if (cleanName.isBlank()) return
+        val existing = taskDao.getListById(listId) ?: return
+        taskDao.updateList(existing.copy(name = cleanName))
+    }
+
+    suspend fun deleteTaskList(listId: Long) {
+        taskDao.deleteListAndItsTasks(listId)
     }
 }

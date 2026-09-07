@@ -5,6 +5,10 @@
         android:icon="@drawable/ic_nav_habits"
         android:title="@string/nav_habits" />
     <item
+        android:id="@+id/nav_tasks"
+        android:icon="@drawable/ic_nav_tasks"
+        android:title="@string/nav_tasks" />
+    <item
         android:id="@+id/nav_timer"
         android:icon="@drawable/ic_nav_timer"
         android:title="@string/nav_timer" />

@@ -27,6 +27,9 @@ interface StudyDao {
     @Query("SELECT * FROM study_sessions WHERE id = :id LIMIT 1")
     suspend fun getSessionById(id: Long): StudySessionEntity?
 
+    @Query("SELECT * FROM study_sessions WHERE date = :date AND LOWER(TRIM(subject)) = LOWER(TRIM(:subject)) LIMIT 1")
+    suspend fun getSessionByDateAndSubject(date: String, subject: String): StudySessionEntity?
+
     @Query("DELETE FROM study_sessions WHERE id = :id")
     suspend fun deleteSessionById(id: Long)
 }

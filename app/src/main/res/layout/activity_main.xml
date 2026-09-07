@@ -20,6 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/app_bg"
+            app:navigationIconTint="@color/app_text_primary"
             app:title="@string/app_name"
             app:titleTextColor="@color/app_text_primary"
             app:titleTextAppearance="@style/TextAppearance.Material3.TitleLarge" />

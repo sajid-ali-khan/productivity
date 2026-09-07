@@ -15,7 +15,8 @@ class ProductivityApplication : Application() {
         ProductivityRepository(
             database.habitDao(),
             database.studyDao(),
-            database.vocabDao()
+            database.vocabDao(),
+            database.taskDao()
         )
     }
 }

@@ -385,7 +385,7 @@
             android:layout_marginBottom="8dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingHorizontal="4dp">
+            android:paddingHorizontal="0dp">
 
             <TextView
                 android:layout_width="0dp"
@@ -425,7 +425,7 @@
             android:id="@+id/layout_empty_today_sessions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="4dp"
+            android:layout_marginHorizontal="0dp"
             android:layout_marginVertical="12dp"
             android:background="@drawable/bg_stat_card"
             android:gravity="center"

@@ -16,6 +16,7 @@ import com.example.databinding.FragmentReportsBinding
 import com.example.ui.adapters.HabitHistoryAdapter
 import com.example.ui.adapters.HabitReportAdapter
 import com.example.ui.adapters.StudyHistoryAdapter
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 
 class ReportsFragment : Fragment() {
@@ -46,7 +47,24 @@ class ReportsFragment : Fragment() {
 
         setupAdapters()
         setupTabToggle()
+        setupInfoButton()
         observeData()
+    }
+
+    private fun setupInfoButton() {
+        binding.btnInfoHabitScore.setOnClickListener {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("All-Time Habit Score")
+                .setMessage(
+                    "The All-Time Habit Score measures your overall habit consistency across all recorded days.\n\n" +
+                    "Formula:\n" +
+                    "Score = (Total Completed Habits ÷ (Total Days Tracked × Total Active Habits)) × 100%\n\n" +
+                    "Example:\n" +
+                    "If you have 4 active habits tracked across 2 days (8 total opportunities) and completed 6 of them, your All-Time Habit Score is 75%."
+                )
+                .setPositiveButton(R.string.close, null)
+                .show()
+        }
     }
 
     private fun setupAdapters() {
@@ -116,24 +134,17 @@ class ReportsFragment : Fragment() {
                     }
                 }
 
-                // 2. Habit Reports
+                // 2. All-Time Habit Score & Habit Reports
+                launch {
+                    viewModel.allTimeHabitScore.collect { score ->
+                        binding.textOverallRate.text = "$score%"
+                        binding.progressOverallRate.progress = score
+                    }
+                }
+
                 launch {
                     viewModel.habitReports.collect { reports ->
                         habitReportAdapter.submitList(reports)
-
-                        if (reports.isNotEmpty()) {
-                            val totalFollowed = reports.sumOf { it.followedDays }
-                            val totalTracked = reports.sumOf { it.totalDaysTracked }
-                            val overallRate = if (totalTracked > 0) {
-                                (totalFollowed * 100) / totalTracked
-                            } else 0
-
-                            binding.textOverallRate.text = "$overallRate%"
-                            binding.progressOverallRate.progress = overallRate
-                        } else {
-                            binding.textOverallRate.text = "0%"
-                            binding.progressOverallRate.progress = 0
-                        }
                     }
                 }
 

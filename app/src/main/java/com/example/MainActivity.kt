@@ -14,6 +14,7 @@ import com.example.ui.PreferencesBottomSheetFragment
 import com.example.ui.ReportsFragment
 import com.example.ui.SavedVocabFragment
 import com.example.ui.StudyTimerFragment
+import com.example.ui.TasksFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -91,6 +92,7 @@ class MainActivity : AppCompatActivity() {
     private fun updateTitleForCurrentTab() {
         val titleRes = when (binding.bottomNavigation.selectedItemId) {
             R.id.nav_habits -> R.string.habits_title
+            R.id.nav_tasks -> R.string.tasks_title
             R.id.nav_timer -> R.string.study_timer_title
             R.id.nav_reports -> R.string.reports_title
             else -> R.string.app_name
@@ -108,6 +110,10 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.nav_habits -> {
                     switchFragment(HabitsFragment(), getString(R.string.habits_title))
+                    true
+                }
+                R.id.nav_tasks -> {
+                    switchFragment(TasksFragment(), getString(R.string.tasks_title))
                     true
                 }
                 R.id.nav_timer -> {

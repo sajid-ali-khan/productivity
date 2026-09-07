@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
@@ -101,6 +102,13 @@ class StudyTimerFragment : Fragment() {
     }
 
     private fun setupListeners() {
+        binding.inputStudySubject.doAfterTextChanged { editable ->
+            val text = editable?.toString()?.trim().orEmpty()
+            if (viewModel.timerState.value != TimerState.RUNNING && text.isNotEmpty() && !text.equals(viewModel.currentSubject.value, ignoreCase = true)) {
+                viewModel.setSubject(text)
+            }
+        }
+
         binding.buttonStartStudy.setOnClickListener {
             val subject = binding.inputStudySubject.text?.toString()?.trim().orEmpty()
             viewModel.startTimer(subject.ifBlank { "General" })

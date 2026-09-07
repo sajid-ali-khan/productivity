@@ -14,6 +14,8 @@ import com.example.data.HabitReportItem
 import com.example.data.HabitWithStatus
 import com.example.data.ProductivityRepository
 import com.example.data.StudySessionEntity
+import com.example.data.TaskEntity
+import com.example.data.TaskListEntity
 import com.example.data.VocabWordEntity
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -21,11 +23,19 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+
+enum class TaskSortOrder {
+    MY_ORDER,
+    STARRED_FIRST,
+    ALPHABETICAL,
+    NEWEST_FIRST
+}
 
 enum class TimerState {
     IDLE,
@@ -69,6 +79,13 @@ class ProductivityViewModel(
         val today = DateUtils.getTodayDateString()
         viewModelScope.launch {
             repository.ensureWordOfTheDay(today)
+            val existingGeneral = repository.getStudySessionByDateAndSubject(today, "General")
+            if (existingGeneral != null && _timerState.value == TimerState.IDLE) {
+                _activeSessionId.value = existingGeneral.id
+                baseTimeElapsedMs = existingGeneral.durationSeconds * 1000L
+                _elapsedSeconds.value = existingGeneral.durationSeconds
+                sessionSystemStartTime = existingGeneral.startTime
+            }
         }
     }
 
@@ -109,6 +126,13 @@ class ProductivityViewModel(
     }
 
     // 2. Reports & History
+    val allTimeHabitScore: StateFlow<Int> = repository.allTimeHabitScore
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = 0
+        )
+
     val habitReports: StateFlow<List<HabitReportItem>> = repository.habitReports
         .stateIn(
             scope = viewModelScope,
@@ -205,17 +229,52 @@ class ProductivityViewModel(
     private var sessionSystemStartTime: Long = 0L
 
     fun setSubject(subject: String) {
-        _currentSubject.value = subject.trim().ifBlank { "General" }
+        val cleanSubject = subject.trim().ifBlank { "General" }
+        _currentSubject.value = cleanSubject
+
+        if (_timerState.value != TimerState.RUNNING) {
+            viewModelScope.launch {
+                val today = DateUtils.getTodayDateString()
+                val existing = repository.getStudySessionByDateAndSubject(today, cleanSubject)
+                if (existing != null) {
+                    _activeSessionId.value = existing.id
+                    baseTimeElapsedMs = existing.durationSeconds * 1000L
+                    _elapsedSeconds.value = existing.durationSeconds
+                    sessionSystemStartTime = existing.startTime
+                } else {
+                    _activeSessionId.value = null
+                    baseTimeElapsedMs = 0L
+                    _elapsedSeconds.value = 0L
+                    sessionSystemStartTime = 0L
+                }
+            }
+        }
     }
 
     fun startTimer(subject: String = "General") {
         if (_timerState.value == TimerState.IDLE) {
-            _currentSubject.value = subject.trim().ifBlank { "General" }
-            sessionSystemStartTime = System.currentTimeMillis()
-            baseTimeElapsedMs = 0L
-            timerStartTimeMs = SystemClock.elapsedRealtime()
-            _timerState.value = TimerState.RUNNING
-            startTicker()
+            val cleanSubject = subject.trim().ifBlank { _currentSubject.value.ifBlank { "General" } }
+            _currentSubject.value = cleanSubject
+
+            viewModelScope.launch {
+                val today = DateUtils.getTodayDateString()
+                val existing = repository.getStudySessionByDateAndSubject(today, cleanSubject)
+                if (existing != null) {
+                    _activeSessionId.value = existing.id
+                    baseTimeElapsedMs = existing.durationSeconds * 1000L
+                    _elapsedSeconds.value = existing.durationSeconds
+                    sessionSystemStartTime = existing.startTime
+                } else {
+                    if (_activeSessionId.value == null) {
+                        baseTimeElapsedMs = 0L
+                        _elapsedSeconds.value = 0L
+                        sessionSystemStartTime = System.currentTimeMillis()
+                    }
+                }
+                timerStartTimeMs = SystemClock.elapsedRealtime()
+                _timerState.value = TimerState.RUNNING
+                startTicker()
+            }
         }
     }
 
@@ -277,7 +336,7 @@ class ProductivityViewModel(
             autoSaveCurrentActiveProgress()
             resetTimer()
             _activeSessionId.value = null
-            _currentSubject.value = defaultSubject.trim().ifBlank { "General" }
+            setSubject(defaultSubject)
         }
     }
 
@@ -309,6 +368,7 @@ class ProductivityViewModel(
         val currentDuration = calculateCurrentDurationSeconds()
         val currentSub = _currentSubject.value.ifBlank { "General" }
         val activeId = _activeSessionId.value
+        val today = DateUtils.getTodayDateString()
 
         if (activeId != null) {
             repository.updateStudySession(
@@ -321,7 +381,7 @@ class ProductivityViewModel(
             val endTime = System.currentTimeMillis()
             val startTime = if (sessionSystemStartTime > 0) sessionSystemStartTime else endTime - (currentDuration * 1000)
             repository.saveStudySession(
-                date = DateUtils.getTodayDateString(),
+                date = today,
                 startTime = startTime,
                 endTime = endTime,
                 durationSeconds = currentDuration,
@@ -335,12 +395,13 @@ class ProductivityViewModel(
         val currentDuration = calculateCurrentDurationSeconds()
         val cleanSubject = subject.trim().ifBlank { _currentSubject.value.ifBlank { "General" } }
         val activeId = _activeSessionId.value
+        val today = DateUtils.getTodayDateString()
 
         resetTimer()
         _activeSessionId.value = null
         _currentSubject.value = "General"
 
-        return if (activeId != null) {
+        val saved = if (activeId != null) {
             repository.updateStudySession(
                 id = activeId,
                 durationSeconds = currentDuration,
@@ -352,7 +413,7 @@ class ProductivityViewModel(
             val endTime = System.currentTimeMillis()
             val startTime = if (sessionSystemStartTime > 0) sessionSystemStartTime else endTime - (currentDuration * 1000)
             repository.saveStudySession(
-                date = DateUtils.getTodayDateString(),
+                date = today,
                 startTime = startTime,
                 endTime = endTime,
                 durationSeconds = currentDuration,
@@ -362,6 +423,17 @@ class ProductivityViewModel(
         } else {
             false
         }
+
+        // Check if today has an existing session for "General" to load for next start
+        val existingGeneral = repository.getStudySessionByDateAndSubject(today, "General")
+        if (existingGeneral != null) {
+            _activeSessionId.value = existingGeneral.id
+            baseTimeElapsedMs = existingGeneral.durationSeconds * 1000L
+            _elapsedSeconds.value = existingGeneral.durationSeconds
+            sessionSystemStartTime = existingGeneral.startTime
+        }
+
+        return saved
     }
 
     fun discardTimer() {
@@ -369,6 +441,16 @@ class ProductivityViewModel(
         resetTimer()
         _activeSessionId.value = null
         _currentSubject.value = "General"
+        viewModelScope.launch {
+            val today = DateUtils.getTodayDateString()
+            val existingGeneral = repository.getStudySessionByDateAndSubject(today, "General")
+            if (existingGeneral != null) {
+                _activeSessionId.value = existingGeneral.id
+                baseTimeElapsedMs = existingGeneral.durationSeconds * 1000L
+                _elapsedSeconds.value = existingGeneral.durationSeconds
+                sessionSystemStartTime = existingGeneral.startTime
+            }
+        }
     }
 
     private fun resetTimer() {
@@ -377,6 +459,146 @@ class ProductivityViewModel(
         baseTimeElapsedMs = 0L
         timerStartTimeMs = 0L
         sessionSystemStartTime = 0L
+    }
+
+    // 4. Tasks & Todo Management (Google Tasks Style)
+    val allTaskLists: StateFlow<List<TaskListEntity>> = repository.allTaskLists
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    private val _selectedListId = MutableStateFlow<Long?>(null)
+    val selectedListId: StateFlow<Long?> = _selectedListId.asStateFlow()
+
+    private val _isStarredTabSelected = MutableStateFlow(false)
+    val isStarredTabSelected: StateFlow<Boolean> = _isStarredTabSelected.asStateFlow()
+
+    private val _taskSortOrder = MutableStateFlow(TaskSortOrder.MY_ORDER)
+    val taskSortOrder: StateFlow<TaskSortOrder> = _taskSortOrder.asStateFlow()
+
+    private val _isCompletedSectionExpanded = MutableStateFlow(true)
+    val isCompletedSectionExpanded: StateFlow<Boolean> = _isCompletedSectionExpanded.asStateFlow()
+
+    // Tasks for active selection (List or Starred)
+    val currentTasks: StateFlow<List<TaskEntity>> = combine(
+        _selectedListId,
+        _isStarredTabSelected,
+        allTaskLists
+    ) { listId, isStarred, lists ->
+        if (isStarred) {
+            repository.starredTasks
+        } else {
+            val targetListId = listId ?: lists.firstOrNull { it.isDefault }?.id ?: lists.firstOrNull()?.id ?: 1L
+            repository.getTasksForList(targetListId)
+        }
+    }.flatMapLatest { flow -> flow }
+    .combine(_taskSortOrder) { tasks, sortOrder ->
+        when (sortOrder) {
+            TaskSortOrder.MY_ORDER -> tasks
+            TaskSortOrder.STARRED_FIRST -> tasks.sortedWith(compareByDescending<TaskEntity> { it.isStarred }.thenByDescending { it.createdAt })
+            TaskSortOrder.ALPHABETICAL -> tasks.sortedBy { it.title.lowercase() }
+            TaskSortOrder.NEWEST_FIRST -> tasks.sortedByDescending { it.createdAt }
+        }
+    }
+    .stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
+    fun selectList(listId: Long) {
+        _isStarredTabSelected.value = false
+        _selectedListId.value = listId
+    }
+
+    fun selectStarredTab() {
+        _isStarredTabSelected.value = true
+    }
+
+    fun setSortOrder(order: TaskSortOrder) {
+        _taskSortOrder.value = order
+    }
+
+    fun toggleCompletedSection() {
+        _isCompletedSectionExpanded.value = !_isCompletedSectionExpanded.value
+    }
+
+    fun addTask(title: String, notes: String = "", isStarred: Boolean = false) {
+        val lists = allTaskLists.value
+        val listId = _selectedListId.value ?: lists.firstOrNull { it.isDefault }?.id ?: lists.firstOrNull()?.id ?: 1L
+        viewModelScope.launch {
+            repository.addTask(
+                listId = listId,
+                title = title,
+                notes = notes,
+                isStarred = isStarred || _isStarredTabSelected.value
+            )
+        }
+    }
+
+    fun toggleTaskCompletion(task: TaskEntity) {
+        viewModelScope.launch {
+            repository.setTaskCompletion(task, !task.isCompleted)
+        }
+    }
+
+    fun toggleTaskStarred(task: TaskEntity) {
+        viewModelScope.launch {
+            repository.setTaskStarred(task, !task.isStarred)
+        }
+    }
+
+    fun updateTask(task: TaskEntity) {
+        viewModelScope.launch {
+            repository.updateTask(task)
+        }
+    }
+
+    fun deleteTask(taskId: Long) {
+        viewModelScope.launch {
+            repository.deleteTask(taskId)
+        }
+    }
+
+    fun createNewList(name: String, onCreated: ((Long) -> Unit)? = null) {
+        viewModelScope.launch {
+            val newId = repository.addTaskList(name)
+            if (newId > 0) {
+                _isStarredTabSelected.value = false
+                _selectedListId.value = newId
+                onCreated?.invoke(newId)
+            }
+        }
+    }
+
+    fun renameCurrentList(newName: String) {
+        val lists = allTaskLists.value
+        val listId = _selectedListId.value ?: lists.firstOrNull { it.isDefault }?.id ?: lists.firstOrNull()?.id ?: return
+        viewModelScope.launch {
+            repository.renameTaskList(listId, newName)
+        }
+    }
+
+    fun deleteCompletedTasksInCurrentList() {
+        val lists = allTaskLists.value
+        val listId = _selectedListId.value ?: lists.firstOrNull { it.isDefault }?.id ?: lists.firstOrNull()?.id ?: return
+        viewModelScope.launch {
+            repository.deleteCompletedTasksForList(listId)
+        }
+    }
+
+    fun deleteCurrentList() {
+        val lists = allTaskLists.value
+        val listId = _selectedListId.value ?: lists.firstOrNull { it.isDefault }?.id ?: lists.firstOrNull()?.id ?: return
+        val currentList = lists.find { it.id == listId }
+        if (currentList?.isDefault == true) return
+        viewModelScope.launch {
+            repository.deleteTaskList(listId)
+            val fallback = lists.firstOrNull { it.isDefault } ?: lists.firstOrNull { it.id != listId }
+            _selectedListId.value = fallback?.id
+        }
     }
 
     override fun onCleared() {
