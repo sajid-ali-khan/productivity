@@ -79,55 +79,35 @@ abstract class AppDatabase : RoomDatabase() {
                     )
                 )
 
-                // Starter tasks
+                // Starter placeholder tasks (simple and approachable)
                 val starterTasks = listOf(
                     TaskEntity(
                         listId = defaultListId,
-                        title = "Complete one module of boot.dev RAG course",
+                        title = "Return the book",
+                        notes = "At the local library by 5 PM",
                         isCompleted = false,
                         isStarred = true
                     ),
                     TaskEntity(
                         listId = defaultListId,
-                        title = "Add todos to productivity",
+                        title = "Laundry",
+                        notes = "",
                         isCompleted = false,
                         isStarred = false
                     ),
                     TaskEntity(
                         listId = defaultListId,
-                        title = "Encyclopedia",
+                        title = "Buy groceries",
+                        notes = "Milk, eggs, coffee beans",
                         isCompleted = false,
                         isStarred = false
                     ),
                     TaskEntity(
                         listId = defaultListId,
-                        title = "Morning Stretch",
+                        title = "Morning walk",
+                        notes = "",
                         isCompleted = true,
-                        completedAt = System.currentTimeMillis() - 86400000L
-                    ),
-                    TaskEntity(
-                        listId = defaultListId,
-                        title = "Meditate",
-                        isCompleted = true,
-                        completedAt = System.currentTimeMillis() - 86400000L
-                    ),
-                    TaskEntity(
-                        listId = defaultListId,
-                        title = "Journal",
-                        isCompleted = true,
-                        completedAt = System.currentTimeMillis() - 86400000L
-                    ),
-                    TaskEntity(
-                        listId = defaultListId,
-                        title = "Fold clothes",
-                        isCompleted = true,
-                        completedAt = System.currentTimeMillis() - 86400000L
-                    ),
-                    TaskEntity(
-                        listId = defaultListId,
-                        title = "Langgraph memory",
-                        isCompleted = true,
-                        completedAt = System.currentTimeMillis() - 86400000L
+                        completedAt = System.currentTimeMillis() - 3600000L
                     )
                 )
                 starterTasks.forEach { task ->

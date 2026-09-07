@@ -32,19 +32,30 @@
     <string name="no_starred_tasks_hint">Star important tasks to see them collected here</string>
 
     <!-- Habits Tab -->
-    <string name="habits_title">Today\'s Habits</string>
+    <string name="habits_title">Habits</string>
     <string name="add_habit">Add Habit</string>
     <string name="add_habit_dialog_title">New Habit</string>
+    <string name="rename_habit_dialog_title">Rename Habit</string>
     <string name="habit_name_hint">Habit name (e.g. Read 30m, Exercise)</string>
     <string name="habit_name_error">Please enter a habit name</string>
     <string name="habits_completed_format">%1$d of %2$d completed</string>
     <string name="no_habits_yet">No habits yet</string>
     <string name="no_habits_hint">Add daily habits to track consistency each day.</string>
     <string name="delete_habit_title">Delete Habit</string>
-    <string name="delete_habit_confirm">Are you sure you want to delete \"%1$s\"?</string>
+    <string name="delete_habit_confirm">Are you sure you want to delete \"%1$s\"?\nThis will remove all tracked records for this habit.</string>
     <string name="delete">Delete</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
+    <string name="edit">Edit</string>
+    <string name="rename">Rename</string>
+    <string name="habit_options">Habit Options</string>
+    <string name="view_heatmap">View Heatmap Calendar</string>
+    <string name="habit_heatmap_title">Habit Consistency Heatmap</string>
+    <string name="study_heatmap_title">Study Time Heatmap</string>
+    <string name="heatmap_legend_less">Less</string>
+    <string name="heatmap_legend_more">More</string>
+    <string name="heatmap_legend_missed">Missed</string>
+    <string name="heatmap_legend_done">Done</string>
 
     <!-- Timer Tab -->
     <string name="study_timer_title">Study Timer</string>

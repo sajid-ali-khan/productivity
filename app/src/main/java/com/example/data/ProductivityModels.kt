@@ -113,10 +113,51 @@ data class DailyStudyHistoryWithSessions(
         }
 }
 
+data class HabitHeatmapData(
+    val habitId: Long,
+    val habitName: String,
+    val currentStreak: Int,
+    val bestStreak: Int,
+    val totalDaysTracked: Int,
+    val followedDays: Int,
+    val completionRatePercent: Int,
+    val completedDates: Set<String>,
+    val allTrackedDates: Set<String>
+)
+
+data class StudyHeatmapData(
+    val totalSeconds: Long,
+    val totalSessions: Int,
+    val activeDaysCount: Int,
+    val longestStreak: Int,
+    val currentStreak: Int,
+    val dailyDurations: Map<String, Long>,
+    val subjectSummary: List<SubjectStudySummary> = emptyList()
+)
+
+data class SubjectStudySummary(
+    val subject: String,
+    val totalSeconds: Long,
+    val sessionCount: Int
+)
+
+data class HeatmapDayCell(
+    val dateStr: String,
+    val dayOfWeek: Int, // 1 (Mon) to 7 (Sun)
+    val weekIndex: Int,
+    val monthName: String,
+    val isToday: Boolean,
+    val isFuture: Boolean,
+    val isCompleted: Boolean = false,
+    val durationSeconds: Long = 0L,
+    val intensityLevel: Int = 0 // 0 to 4
+)
+
 object DateUtils {
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     private val displayFormat = SimpleDateFormat("EEE, MMM d", Locale.getDefault())
     private val dayOfWeekFormat = SimpleDateFormat("EEE", Locale.getDefault())
+    private val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
     private val timeFormat = SimpleDateFormat("h:mm a", Locale.getDefault())
 
     fun getTodayDateString(): String = dateFormat.format(Date())
@@ -136,6 +177,61 @@ object DateUtils {
             cal.add(Calendar.DAY_OF_YEAR, 1)
         }
         return list
+    }
+
+    /**
+     * Generates a grid of days for a multi-week contribution heatmap (Monday = row 0 .. Sunday = row 6).
+     */
+    fun getHeatmapGridDays(numWeeks: Int = 12): List<HeatmapDayCell> {
+        val cells = mutableListOf<HeatmapDayCell>()
+        val todayStr = getTodayDateString()
+        val todayCal = Calendar.getInstance()
+
+        // End on the upcoming Sunday of the current week (or today)
+        val endCal = Calendar.getInstance().apply {
+            firstDayOfWeek = Calendar.MONDAY
+            val dayOfWeek = get(Calendar.DAY_OF_WEEK)
+            val daysToSunday = if (dayOfWeek == Calendar.SUNDAY) 0 else (Calendar.SUNDAY + 7 - dayOfWeek) % 7
+            add(Calendar.DAY_OF_YEAR, daysToSunday)
+        }
+
+        // Start (numWeeks - 1) weeks prior on a Monday
+        val startCal = (endCal.clone() as Calendar).apply {
+            add(Calendar.DAY_OF_YEAR, -(numWeeks * 7 - 1))
+        }
+
+        var currentCal = startCal.clone() as Calendar
+        var currentWeek = 0
+        var dayInWeek = 0
+
+        while (!currentCal.after(endCal)) {
+            val dateStr = dateFormat.format(currentCal.time)
+            // Convert Calendar.DAY_OF_WEEK (Sun=1..Sat=7) to Mon=0..Sun=6
+            val calDow = currentCal.get(Calendar.DAY_OF_WEEK)
+            val monDow = if (calDow == Calendar.SUNDAY) 6 else (calDow - 2)
+            val monthStr = monthFormat.format(currentCal.time)
+            val isFuture = currentCal.after(todayCal) && dateStr != todayStr
+            val isToday = dateStr == todayStr
+
+            cells.add(
+                HeatmapDayCell(
+                    dateStr = dateStr,
+                    dayOfWeek = monDow,
+                    weekIndex = currentWeek,
+                    monthName = monthStr,
+                    isToday = isToday,
+                    isFuture = isFuture
+                )
+            )
+
+            currentCal.add(Calendar.DAY_OF_YEAR, 1)
+            dayInWeek++
+            if (dayInWeek % 7 == 0) {
+                currentWeek++
+            }
+        }
+
+        return cells
     }
 
     fun getDayOfWeekLabel(dateStr: String): String {

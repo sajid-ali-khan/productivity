@@ -58,10 +58,19 @@ class StudyTimerFragment : Fragment() {
     private fun setupSessionsRecyclerView() {
         todaySessionAdapter = TodaySessionAdapter(
             onSwitchSession = { session ->
-                // Switch session even after saving; only one active at a time
-                viewModel.switchToSession(session, autoResume = true)
-                val displaySub = session.subject.ifBlank { "General" }
-                Toast.makeText(requireContext(), "Resumed session: $displaySub", Toast.LENGTH_SHORT).show()
+                if (viewModel.activeSessionId.value == session.id) {
+                    // If this session is already current, clicking toggles pause/resume
+                    if (viewModel.timerState.value == TimerState.RUNNING) {
+                        viewModel.pauseTimer()
+                    } else {
+                        viewModel.resumeTimer()
+                    }
+                } else {
+                    // Switch session and resume
+                    viewModel.switchToSession(session, autoResume = true)
+                    val displaySub = session.subject.ifBlank { "General" }
+                    Toast.makeText(requireContext(), "Resumed session: $displaySub", Toast.LENGTH_SHORT).show()
+                }
             },
             onDeleteSession = { session ->
                 AlertDialog.Builder(requireContext())
@@ -152,6 +161,10 @@ class StudyTimerFragment : Fragment() {
                 launch {
                     viewModel.timerState.collect { state ->
                         updateTimerUiForState(state)
+                        todaySessionAdapter.setActiveSessionState(
+                            id = viewModel.activeSessionId.value,
+                            isRunning = state == TimerState.RUNNING
+                        )
                     }
                 }
 
@@ -194,7 +207,10 @@ class StudyTimerFragment : Fragment() {
                 // 5. Active Session ID Tracker (For switching between sessions)
                 launch {
                     viewModel.activeSessionId.collect { activeId ->
-                        todaySessionAdapter.setActiveSessionId(activeId)
+                        todaySessionAdapter.setActiveSessionState(
+                            id = activeId,
+                            isRunning = viewModel.timerState.value == TimerState.RUNNING
+                        )
                         if (activeId != null) {
                             binding.textActiveSessionLabel.visibility = View.VISIBLE
                         } else {

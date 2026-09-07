@@ -9,7 +9,9 @@ import com.example.R
 import com.example.data.HabitReportItem
 import com.example.databinding.ItemHabitReportBinding
 
-class HabitReportAdapter : ListAdapter<HabitReportItem, HabitReportAdapter.ReportViewHolder>(ReportDiffCallback()) {
+class HabitReportAdapter(
+    private val onHabitClicked: ((HabitReportItem) -> Unit)? = null
+) : ListAdapter<HabitReportItem, HabitReportAdapter.ReportViewHolder>(ReportDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReportViewHolder {
         val binding = ItemHabitReportBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -45,6 +47,10 @@ class HabitReportAdapter : ListAdapter<HabitReportItem, HabitReportAdapter.Repor
 
             binding.textReportStreak.text =
                 context.getString(R.string.habit_streak, item.currentStreak)
+
+            binding.root.setOnClickListener {
+                onHabitClicked?.invoke(item)
+            }
         }
     }
 

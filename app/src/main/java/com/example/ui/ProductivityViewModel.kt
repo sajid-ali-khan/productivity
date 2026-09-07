@@ -10,15 +10,18 @@ import com.example.data.DateUtils
 import com.example.data.DayHabitGraphData
 import com.example.data.DayHabitHistory
 import com.example.data.DayStudyGraphData
+import com.example.data.HabitHeatmapData
 import com.example.data.HabitReportItem
 import com.example.data.HabitWithStatus
 import com.example.data.ProductivityRepository
+import com.example.data.StudyHeatmapData
 import com.example.data.StudySessionEntity
 import com.example.data.TaskEntity
 import com.example.data.TaskListEntity
 import com.example.data.VocabWordEntity
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -118,6 +121,24 @@ class ProductivityViewModel(
             repository.setHabitCompletion(habitId, _selectedDate.value, isCompleted)
         }
     }
+
+    fun renameHabit(habitId: Long, newName: String) {
+        if (newName.isBlank()) return
+        viewModelScope.launch {
+            repository.renameHabit(habitId, newName)
+        }
+    }
+
+    fun getHabitHeatmap(habitId: Long): Flow<HabitHeatmapData?> {
+        return repository.getHabitHeatmapData(habitId)
+    }
+
+    val studyHeatmap: StateFlow<StudyHeatmapData> = repository.getStudyHeatmapData()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = StudyHeatmapData(0L, 0, 0, 0, 0, emptyMap())
+        )
 
     fun deleteHabit(habitId: Long) {
         viewModelScope.launch {

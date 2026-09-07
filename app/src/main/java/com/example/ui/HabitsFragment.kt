@@ -41,7 +41,7 @@ class HabitsFragment : Fragment(), TextToSpeech.OnInitListener {
     private var textToSpeech: TextToSpeech? = null
     private var isTtsReady = false
     private var currentWord: VocabWordEntity? = null
-    private var isVocabExpanded = true
+    private var isVocabExpanded = false
     private var mediaPlayer: MediaPlayer? = null
 
     override fun onCreateView(
@@ -57,6 +57,7 @@ class HabitsFragment : Fragment(), TextToSpeech.OnInitListener {
         super.onViewCreated(view, savedInstanceState)
 
         initTts()
+        updateVocabExpandState()
         setupRecyclerView()
         setupListeners()
         setupVocabListeners()
@@ -80,8 +81,13 @@ class HabitsFragment : Fragment(), TextToSpeech.OnInitListener {
             onToggleCompleted = { habitId, isChecked ->
                 viewModel.toggleHabitCompletion(habitId, isChecked)
             },
-            onDeleteClicked = { habitWithStatus ->
-                showDeleteConfirmationDialog(habitWithStatus.habit.id, habitWithStatus.habit.name)
+            onItemClick = { habitWithStatus ->
+                // Quick tap opens heatmap calendar
+                HabitHeatmapBottomSheet.newInstance(habitWithStatus.habit.id, habitWithStatus.habit.name)
+                    .show(childFragmentManager, HabitHeatmapBottomSheet.TAG)
+            },
+            onItemLongClick = { habitWithStatus ->
+                showHabitOptionsDialog(habitWithStatus)
             }
         )
         binding.recyclerHabits.apply {
@@ -263,6 +269,65 @@ class HabitsFragment : Fragment(), TextToSpeech.OnInitListener {
                 } else {
                     dialogBinding.layoutHabitInput.error = null
                     viewModel.addHabit(habitName)
+                    dialog.dismiss()
+                }
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun showHabitOptionsDialog(habitWithStatus: com.example.data.HabitWithStatus) {
+        val options = arrayOf(
+            getString(R.string.view_heatmap),
+            getString(R.string.rename),
+            getString(R.string.delete)
+        )
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(habitWithStatus.habit.name)
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> {
+                        // View Heatmap
+                        HabitHeatmapBottomSheet.newInstance(habitWithStatus.habit.id, habitWithStatus.habit.name)
+                            .show(childFragmentManager, HabitHeatmapBottomSheet.TAG)
+                    }
+                    1 -> {
+                        // Rename
+                        showRenameHabitDialog(habitWithStatus.habit.id, habitWithStatus.habit.name)
+                    }
+                    2 -> {
+                        // Delete
+                        showDeleteConfirmationDialog(habitWithStatus.habit.id, habitWithStatus.habit.name)
+                    }
+                }
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun showRenameHabitDialog(habitId: Long, currentName: String) {
+        val dialogBinding = DialogAddHabitBinding.inflate(layoutInflater)
+        dialogBinding.inputHabitName.setText(currentName)
+        dialogBinding.inputHabitName.setSelection(currentName.length)
+
+        val dialog = MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.rename_habit_dialog_title)
+            .setView(dialogBinding.root)
+            .setPositiveButton(R.string.save, null)
+            .setNegativeButton(R.string.cancel, null)
+            .create()
+
+        dialog.setOnShowListener {
+            val positiveButton = dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE)
+            positiveButton.setOnClickListener {
+                val newName = dialogBinding.inputHabitName.text?.toString()?.trim().orEmpty()
+                if (newName.isBlank()) {
+                    dialogBinding.layoutHabitInput.error = getString(R.string.habit_name_error)
+                } else {
+                    dialogBinding.layoutHabitInput.error = null
+                    viewModel.renameHabit(habitId, newName)
                     dialog.dismiss()
                 }
             }

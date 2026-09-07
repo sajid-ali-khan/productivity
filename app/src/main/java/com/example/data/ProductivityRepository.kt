@@ -2,6 +2,7 @@ package com.example.data
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 
 class ProductivityRepository(
@@ -80,8 +81,179 @@ class ProductivityRepository(
         habitDao.insertOrUpdateLog(log)
     }
 
+    suspend fun renameHabit(habitId: Long, newName: String) {
+        val cleanName = newName.trim()
+        if (cleanName.isBlank()) return
+        val habit = habitDao.getActiveHabits().firstOrNull()?.find { it.id == habitId }
+        if (habit != null) {
+            habitDao.updateHabit(habit.copy(name = cleanName))
+        }
+    }
+
     suspend fun deleteHabit(habitId: Long) {
         habitDao.deleteHabitAndLogs(habitId)
+    }
+
+    fun getHabitHeatmapData(habitId: Long): Flow<HabitHeatmapData?> = combine(
+        habitDao.getAllHabits(),
+        habitDao.getLogsForHabit(habitId)
+    ) { habits, logs ->
+        val habit = habits.find { it.id == habitId } ?: return@combine null
+        val todayStr = DateUtils.getTodayDateString()
+        val completedLogs = logs.filter { it.isCompleted }
+        val completedDates = completedLogs.map { it.date }.toSet()
+        val allTrackedDates = (logs.map { it.date } + todayStr).toSet()
+
+        val followedCount = completedDates.size
+        val totalTracked = allTrackedDates.size
+
+        val rate = if (totalTracked > 0) {
+            ((followedCount * 100) / totalTracked).coerceIn(0, 100)
+        } else {
+            0
+        }
+
+        // Calculate Current Streak and Best Streak
+        val sortedAscDates = completedDates.sorted()
+        var currentStreak = 0
+        var bestStreak = 0
+
+        // Best streak calculation
+        var runningStreak = 0
+        var prevCal: java.util.Calendar? = null
+        val dateFormat = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+
+        for (dStr in sortedAscDates) {
+            try {
+                val d = dateFormat.parse(dStr) ?: continue
+                val cal = java.util.Calendar.getInstance().apply { time = d }
+                if (prevCal != null) {
+                    val clone = prevCal.clone() as java.util.Calendar
+                    clone.add(java.util.Calendar.DAY_OF_YEAR, 1)
+                    if (clone.get(java.util.Calendar.YEAR) == cal.get(java.util.Calendar.YEAR) &&
+                        clone.get(java.util.Calendar.DAY_OF_YEAR) == cal.get(java.util.Calendar.DAY_OF_YEAR)
+                    ) {
+                        runningStreak++
+                    } else {
+                        runningStreak = 1
+                    }
+                } else {
+                    runningStreak = 1
+                }
+                if (runningStreak > bestStreak) {
+                    bestStreak = runningStreak
+                }
+                prevCal = cal
+            } catch (_: Exception) {}
+        }
+
+        // Current streak calculation (backwards from today/yesterday)
+        var checkCal = java.util.Calendar.getInstance()
+        val todayDone = completedDates.contains(todayStr)
+        if (!todayDone) {
+            checkCal.add(java.util.Calendar.DAY_OF_YEAR, -1)
+        }
+        while (true) {
+            val dateStr = dateFormat.format(checkCal.time)
+            if (completedDates.contains(dateStr)) {
+                currentStreak++
+                checkCal.add(java.util.Calendar.DAY_OF_YEAR, -1)
+            } else {
+                break
+            }
+        }
+
+        HabitHeatmapData(
+            habitId = habit.id,
+            habitName = habit.name,
+            currentStreak = currentStreak,
+            bestStreak = maxOf(bestStreak, currentStreak),
+            totalDaysTracked = totalTracked,
+            followedDays = followedCount,
+            completionRatePercent = rate,
+            completedDates = completedDates,
+            allTrackedDates = allTrackedDates
+        )
+    }
+
+    fun getStudyHeatmapData(): Flow<StudyHeatmapData> = studyDao.getAllSessions().map { sessions ->
+        val todayStr = DateUtils.getTodayDateString()
+        val groupedByDate = sessions.groupBy { it.date }
+        val dailyDurations = groupedByDate.mapValues { (_, daySessions) ->
+            daySessions.sumOf { it.durationSeconds }
+        }
+
+        val totalSeconds = sessions.sumOf { it.durationSeconds }
+        val totalSessions = sessions.size
+        val activeDates = dailyDurations.filter { it.value > 0 }.keys.toSet()
+        val activeDaysCount = activeDates.size
+
+        // Streak calculation
+        val dateFormat = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+        val sortedAscActiveDates = activeDates.sorted()
+
+        var runningStreak = 0
+        var longestStreak = 0
+        var prevCal: java.util.Calendar? = null
+
+        for (dStr in sortedAscActiveDates) {
+            try {
+                val d = dateFormat.parse(dStr) ?: continue
+                val cal = java.util.Calendar.getInstance().apply { time = d }
+                if (prevCal != null) {
+                    val clone = prevCal.clone() as java.util.Calendar
+                    clone.add(java.util.Calendar.DAY_OF_YEAR, 1)
+                    if (clone.get(java.util.Calendar.YEAR) == cal.get(java.util.Calendar.YEAR) &&
+                        clone.get(java.util.Calendar.DAY_OF_YEAR) == cal.get(java.util.Calendar.DAY_OF_YEAR)
+                    ) {
+                        runningStreak++
+                    } else {
+                        runningStreak = 1
+                    }
+                } else {
+                    runningStreak = 1
+                }
+                if (runningStreak > longestStreak) {
+                    longestStreak = runningStreak
+                }
+                prevCal = cal
+            } catch (_: Exception) {}
+        }
+
+        var currentStreak = 0
+        var checkCal = java.util.Calendar.getInstance()
+        val todayDone = activeDates.contains(todayStr)
+        if (!todayDone) {
+            checkCal.add(java.util.Calendar.DAY_OF_YEAR, -1)
+        }
+        while (true) {
+            val dateStr = dateFormat.format(checkCal.time)
+            if (activeDates.contains(dateStr)) {
+                currentStreak++
+                checkCal.add(java.util.Calendar.DAY_OF_YEAR, -1)
+            } else {
+                break
+            }
+        }
+
+        val subjectSummary = sessions.groupBy { it.subject.trim().ifBlank { "General" } }
+            .map { (sub, subSessions) ->
+                SubjectStudySummary(
+                    subject = sub,
+                    totalSeconds = subSessions.sumOf { it.durationSeconds },
+                    sessionCount = subSessions.size
+                )
+            }.sortedByDescending { it.totalSeconds }
+
+        StudyHeatmapData(
+            totalSeconds = totalSeconds,
+            totalSessions = totalSessions,
+            activeDaysCount = activeDaysCount,
+            longestStreak = maxOf(longestStreak, currentStreak),
+            currentStreak = currentStreak,
+            dailyDurations = dailyDurations,
+            subjectSummary = subjectSummary
+        )
     }
 
     // 2. Habit Reports & History

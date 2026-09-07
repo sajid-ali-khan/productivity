@@ -11,7 +11,8 @@ import com.example.databinding.ItemHabitBinding
 
 class HabitAdapter(
     private val onToggleCompleted: (habitId: Long, isChecked: Boolean) -> Unit,
-    private val onDeleteClicked: (habit: HabitWithStatus) -> Unit
+    private val onItemClick: ((habit: HabitWithStatus) -> Unit)? = null,
+    private val onItemLongClick: (habit: HabitWithStatus) -> Unit
 ) : ListAdapter<HabitWithStatus, HabitAdapter.HabitViewHolder>(HabitDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HabitViewHolder {
@@ -41,8 +42,18 @@ class HabitAdapter(
                 onToggleCompleted(item.habit.id, isChecked)
             }
 
-            binding.buttonDeleteHabit.setOnClickListener {
-                onDeleteClicked(item)
+            binding.root.setOnClickListener {
+                if (onItemClick != null) {
+                    onItemClick.invoke(item)
+                } else {
+                    // Default tap toggles checkbox
+                    binding.checkboxHabit.isChecked = !binding.checkboxHabit.isChecked
+                }
+            }
+
+            binding.root.setOnLongClickListener {
+                onItemLongClick(item)
+                true
             }
         }
 

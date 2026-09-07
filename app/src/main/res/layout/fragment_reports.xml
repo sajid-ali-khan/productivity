@@ -200,17 +200,26 @@
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Subheading: Per Habit Consistency Breakdown -->
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:letterSpacing="0.08"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
                 android:paddingHorizontal="20dp"
                 android:paddingTop="8dp"
-                android:paddingBottom="4dp"
-                android:text="HABIT BREAKDOWN (FOLLOWED VS SKIPPED)"
-                android:textColor="@color/app_text_secondary"
-                android:textSize="11sp"
-                android:textStyle="bold" />
+                android:paddingBottom="4dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:letterSpacing="0.08"
+                    android:text="HABIT BREAKDOWN (TAP FOR HEATMAP)"
+                    android:textColor="@color/app_text_secondary"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_habit_reports"
@@ -281,23 +290,51 @@
                     android:orientation="vertical"
                     android:padding="20dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:letterSpacing="0.08"
-                        android:text="@string/study_graph_header"
-                        android:textColor="@color/app_text_muted"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textAllCaps="true" />
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="@string/study_graph_subtitle"
-                        android:textColor="@color/app_text_secondary"
-                        android:textSize="13sp" />
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:letterSpacing="0.08"
+                                android:text="@string/study_graph_header"
+                                android:textAllCaps="true"
+                                android:textColor="@color/app_text_muted"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="@string/study_graph_subtitle"
+                                android:textColor="@color/app_text_secondary"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_open_study_heatmap"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="38dp"
+                            android:minHeight="38dp"
+                            android:paddingHorizontal="10dp"
+                            android:paddingVertical="0dp"
+                            android:text="Heatmap"
+                            android:textColor="@color/app_text_primary"
+                            android:textSize="12sp"
+                            app:cornerRadius="10dp"
+                            app:strokeColor="@color/app_stroke" />
+                    </LinearLayout>
 
                     <!-- Custom Graph View -->
                     <com.example.ui.views.StudyTimeGraphView

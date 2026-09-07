@@ -18,10 +18,12 @@ class TodaySessionAdapter(
 ) : ListAdapter<StudySessionEntity, TodaySessionAdapter.SessionViewHolder>(SessionDiffCallback()) {
 
     private var activeSessionId: Long? = null
+    private var isTimerRunning: Boolean = false
 
-    fun setActiveSessionId(id: Long?) {
-        if (activeSessionId != id) {
+    fun setActiveSessionState(id: Long?, isRunning: Boolean) {
+        if (activeSessionId != id || isTimerRunning != isRunning) {
             activeSessionId = id
+            isTimerRunning = isRunning
             notifyDataSetChanged()
         }
     }
@@ -45,7 +47,7 @@ class TodaySessionAdapter(
 
         fun bind(session: StudySessionEntity) {
             val context = binding.root.context
-            val isActive = session.id == activeSessionId
+            val isCurrentSession = session.id == activeSessionId
 
             // Primary Subject
             binding.textSessionSubject.text = session.subject.ifBlank { "General" }
@@ -57,16 +59,27 @@ class TodaySessionAdapter(
             // Compact duration (e.g. "30m", "1h 15m")
             binding.textSessionDuration.text = DateUtils.formatDurationCompact(session.durationSeconds)
 
-            // Active state handling
-            if (isActive) {
+            // Active/Selected state handling
+            if (isCurrentSession) {
                 binding.badgeActiveSession.visibility = View.VISIBLE
                 binding.cardSession.strokeColor = ContextCompat.getColor(context, R.color.app_text_primary)
                 binding.cardSession.strokeWidth = 2
-                binding.buttonSwitchSession.text = "Active"
-                binding.buttonSwitchSession.setIconResource(R.drawable.ic_pause)
-                binding.buttonSwitchSession.setBackgroundColor(ContextCompat.getColor(context, R.color.app_text_primary))
-                binding.buttonSwitchSession.setTextColor(ContextCompat.getColor(context, R.color.app_bg))
-                binding.buttonSwitchSession.iconTint = ContextCompat.getColorStateList(context, R.color.app_bg)
+
+                if (isTimerRunning) {
+                    binding.badgeActiveSession.text = "● ACTIVE NOW"
+                    binding.buttonSwitchSession.text = "Active"
+                    binding.buttonSwitchSession.setIconResource(R.drawable.ic_pause)
+                    binding.buttonSwitchSession.setBackgroundColor(ContextCompat.getColor(context, R.color.app_text_primary))
+                    binding.buttonSwitchSession.setTextColor(ContextCompat.getColor(context, R.color.app_bg))
+                    binding.buttonSwitchSession.iconTint = ContextCompat.getColorStateList(context, R.color.app_bg)
+                } else {
+                    binding.badgeActiveSession.text = "❚❚ PAUSED"
+                    binding.buttonSwitchSession.text = "Paused"
+                    binding.buttonSwitchSession.setIconResource(R.drawable.ic_play)
+                    binding.buttonSwitchSession.setBackgroundColor(ContextCompat.getColor(context, R.color.app_surface_variant))
+                    binding.buttonSwitchSession.setTextColor(ContextCompat.getColor(context, R.color.app_text_primary))
+                    binding.buttonSwitchSession.iconTint = ContextCompat.getColorStateList(context, R.color.app_text_primary)
+                }
             } else {
                 binding.badgeActiveSession.visibility = View.GONE
                 binding.cardSession.strokeColor = ContextCompat.getColor(context, R.color.app_stroke)

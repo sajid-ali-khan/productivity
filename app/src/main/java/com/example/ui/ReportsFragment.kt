@@ -68,7 +68,12 @@ class ReportsFragment : Fragment() {
     }
 
     private fun setupAdapters() {
-        habitReportAdapter = HabitReportAdapter()
+        habitReportAdapter = HabitReportAdapter(
+            onHabitClicked = { item ->
+                HabitHeatmapBottomSheet.newInstance(item.habitId, item.name)
+                    .show(childFragmentManager, HabitHeatmapBottomSheet.TAG)
+            }
+        )
         binding.recyclerHabitReports.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = habitReportAdapter
@@ -84,6 +89,11 @@ class ReportsFragment : Fragment() {
         binding.recyclerStudyHistory.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = studyHistoryAdapter
+        }
+
+        binding.btnOpenStudyHeatmap.setOnClickListener {
+            StudyHeatmapBottomSheet.newInstance()
+                .show(childFragmentManager, StudyHeatmapBottomSheet.TAG)
         }
     }
 
