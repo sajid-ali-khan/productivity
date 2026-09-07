@@ -69,6 +69,10 @@ class MainActivity : AppCompatActivity() {
                     super.onOptionsItemSelected(item)
                 }
             }
+            R.id.action_github -> {
+                showGithubOptionsDialog()
+                true
+            }
             R.id.action_saved_vocab -> {
                 openSavedVocabFragment()
                 true
@@ -79,6 +83,30 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun showGithubOptionsDialog() {
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.github_dialog_title)
+            .setIcon(R.drawable.ic_github)
+            .setMessage(R.string.github_dialog_message)
+            .setPositiveButton(R.string.open_issues) { _, _ ->
+                openUrlInBrowser(getString(R.string.github_issues_url))
+            }
+            .setNeutralButton(R.string.view_repo) { _, _ ->
+                openUrlInBrowser(getString(R.string.github_repo_url))
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun openUrlInBrowser(url: String) {
+        try {
+            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url))
+            startActivity(intent)
+        } catch (e: Exception) {
+            android.widget.Toast.makeText(this, "Could not open browser: $url", android.widget.Toast.LENGTH_SHORT).show()
         }
     }
 

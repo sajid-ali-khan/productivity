@@ -31,9 +31,29 @@ class PreferencesBottomSheetFragment : BottomSheetDialogFragment() {
 
         setupThemeSelector()
         setupFontSelector()
+        setupAboutAndFeedback()
 
         binding.buttonClosePrefs.setOnClickListener {
             dismiss()
+        }
+    }
+
+    private fun setupAboutAndFeedback() {
+        binding.cardGithubRepo.setOnClickListener {
+            openUrl(getString(R.string.github_repo_url))
+        }
+
+        binding.cardReportIssue.setOnClickListener {
+            openUrl(getString(R.string.github_issues_url))
+        }
+    }
+
+    private fun openUrl(url: String) {
+        try {
+            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url))
+            startActivity(intent)
+        } catch (e: Exception) {
+            Toast.makeText(requireContext(), "Could not open browser: $url", Toast.LENGTH_SHORT).show()
         }
     }
 
