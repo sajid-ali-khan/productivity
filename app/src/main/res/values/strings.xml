@@ -6,7 +6,7 @@
     <string name="nav_habits">Habits</string>
     <string name="nav_tasks">Tasks</string>
     <string name="nav_timer">Study Timer</string>
-    <string name="nav_reports">Reports &amp; History</string>
+    <string name="nav_reports">History</string>
 
     <!-- Tasks Tab (Google Tasks Style) -->
     <string name="tasks_title">Tasks</string>
@@ -90,7 +90,7 @@
     <string name="quick_chip_writing">Writing</string>
 
     <!-- Reports & History Tab -->
-    <string name="reports_title">Performance &amp; History</string>
+    <string name="reports_title">History</string>
     <string name="habits_performance_header">Habits Performance</string>
     <string name="habits_trend_header">7-Day Habits Trend</string>
     <string name="habits_trend_subtitle">Daily completion rate across tracked habits</string>
